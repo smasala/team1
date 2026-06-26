@@ -1,0 +1,28 @@
+// Prisma schema — owned by the data-access library (single source of DB truth).
+//
+// DB SWAP (SQLite now -> Supabase/Postgres later):
+//   1. Change `provider` below from "sqlite" to "postgresql".
+//   2. Set DATABASE_URL in .env to your Supabase connection string.
+//   3. Run: npm run db:migrate
+// Nothing else in the codebase references the database directly.
+
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  // Prisma 7: connection URL lives in prisma.config.ts (datasource.url) and is
+  // passed to PrismaClient via a driver adapter at runtime. Swap to "postgresql"
+  // for Supabase.
+  provider = "sqlite"
+}
+
+/// Minimal sample model so the stack is wired end-to-end.
+model Note {
+  id        String   @id @default(cuid())
+  title     String
+  body      String   @default("")
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
