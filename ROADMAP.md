@@ -29,8 +29,8 @@
 - [x] R4.2 Run graphify over the scaffolded repo (graphify-out/, gitignored)
 
 ## Phase 5 — Ship
-- [ ] R5.1 Conventional-commit the scaffold
-- [ ] R5.2 Push to origin
+- [x] R5.1 Conventional-commit the scaffold
+- [x] R5.2 Push to origin
 
 ## Conventions (apply throughout)
 - Conventional Commits (`feat:`, `chore:`, `docs:`, `build:`...).
