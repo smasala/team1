@@ -65,10 +65,13 @@ function cleanDescription(s) {
     .trim();
 }
 
-/** German "1.234,56" -> 1234.56, or null if it isn't a price. Expects cleaned text. */
+/**
+ * Extract a German price ("1.234,56" -> 1234.56) from a price cell, or null.
+ * Matches the first price token rather than the whole string, so source typos
+ * like a trailing "20,80.." still parse.
+ */
 function parsePrice(text) {
-  const t = text.replace(/\s/g, '');
-  const m = t.match(/^(\d{1,3}(?:\.\d{3})*|\d+),(\d{2})$/);
+  const m = text.replace(/\s/g, '').match(/(\d{1,3}(?:\.\d{3})*|\d+),(\d{2})(?!\d)/);
   if (!m) return null;
   return Number(`${m[1].replace(/\./g, '')}.${m[2]}`);
 }
@@ -95,9 +98,9 @@ function normalizeUnit(raw) {
   const u = (raw || '').replace(/ /g, ' ').trim();
   if (!u) return '';
   if (UNIT_MAP.has(u)) return UNIT_MAP.get(u);
-  const compact = u.replace(/\s+/g, '').replace(/^\.+/, ''); // "m ²" -> "m²", ".m²" -> "m²"
+  const compact = u.replace(/\s+/g, '').replace(/^\.+/, '').replace(/\.+$/, ''); // "m ²"->"m²", ".m²"/"m²."->"m²"
   if (UNIT_MAP.has(compact)) return UNIT_MAP.get(compact);
-  return u;
+  return compact || u;
 }
 
 /** Tidy a subcategory header: drop letter-spaced banners like "N E T T O P R E I S E". */
@@ -114,17 +117,35 @@ function cleanHeader(s) {
 }
 
 /**
+ * Find a bold word at the very START of an item's description (after the bullet),
+ * used as a subcategory header in some trades (e.g. TROCKENBAU "• **GK-Platten**,
+ * 1 x 12,5 mm ..."). Returns it only if the description actually begins with that
+ * bold text, so mid-description emphasis isn't mistaken for a header.
+ */
+function leadingBoldHeader(rawHtml, description) {
+  for (const m of rawHtml.matchAll(/<strong[^>]*>([\s\S]*?)<\/strong>/gi)) {
+    const word = cleanDescription(cleanText(m[1]));
+    if (!word) continue; // skip <strong> that only wraps the bullet
+    const desc = description.replace(/^\W+/, '').toLowerCase();
+    return desc.startsWith(word.toLowerCase()) ? cleanHeader(word) : null;
+  }
+  return null;
+}
+
+/**
  * Split a description cell into an optional subcategory header and the item text.
- * Subcategory headers appear as bold text BEFORE the leading "•" bullet of the
- * first item in a group (e.g. "Vorbereitung des Untergrundes • Reinigung ...").
+ * Headers appear either as bold text BEFORE the leading "•" bullet of the first
+ * item in a group (e.g. "Vorbereitung des Untergrundes • Reinigung ..."), or as a
+ * bold word right AFTER the bullet ("• GK-Platten, ...").
  */
 function parseDescriptionCell(rawHtml) {
   const text = cleanText(rawHtml);
   const idx = text.indexOf('•');
   if (idx === -1) return { header: null, description: cleanDescription(text) };
   const before = text.slice(0, idx).trim();
-  const after = text.slice(idx + 1);
-  return { header: before ? cleanHeader(before) : null, description: cleanDescription(after) };
+  const description = cleanDescription(text.slice(idx + 1));
+  const header = before ? cleanHeader(before) : leadingBoldHeader(rawHtml, description);
+  return { header, description };
 }
 
 /** Discover the trade categories linked from the index page. */
