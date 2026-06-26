@@ -104,9 +104,11 @@ function normalizeUnit(raw) {
 function cleanHeader(s) {
   const cleaned = s
     .replace(/(?:[A-ZÄÖÜ]\s){2,}[A-ZÄÖÜ](?=\s|$)/g, ' ') // decorative spaced-out caps banner
-    .replace(/^([A-ZÄÖÜ]) (?=[a-zäöü])/, '$1') // drop-cap split, e.g. "F ensterbänke" -> "Fensterbänke"
     .replace(/\s+/g, ' ')
-    .replace(/^[\s\-–:]+|[\s\-–:]+$/g, '')
+    .trim()
+    .replace(/^[^\p{L}\p{N}(]+/u, '') // leading decorative junk, e.g. "° Abdichtung..." -> "Abdichtung..."
+    .replace(/[^\p{L}\p{N}).%]+$/u, '') // trailing decorative junk
+    .replace(/^([A-ZÄÖÜ]) (?=[a-zäöü])/, '$1') // drop-cap split, e.g. "F ensterbänke" -> "Fensterbänke"
     .trim();
   return cleaned || null;
 }

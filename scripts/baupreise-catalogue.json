@@ -1,6 +1,6 @@
 {
   "source": "https://baupreise24.de/baupreise",
-  "scrapedAt": "2026-06-26T17:01:29.730Z",
+  "scrapedAt": "2026-06-26T21:40:14.568Z",
   "currency": "EUR",
   "priceNote": "German net averages (ohne MwSt.), baseline Q1 2022. Units normalized; unitRaw/priceRaw preserve the source values.",
   "categoryCount": 29,
@@ -8585,7 +8585,7 @@
       "subcategoryCount": 3,
       "subcategories": [
         "Erläuterung d.Kategorien",
-        "° Abdichtung von Dächern u. Balkonen DIN 18531",
+        "Abdichtung von Dächern u. Balkonen DIN 18531",
         "Bestandsarbeiten"
       ],
       "itemCount": 61,
@@ -8687,7 +8687,7 @@
           "priceRaw": "27,70"
         },
         {
-          "subcategory": "° Abdichtung von Dächern u. Balkonen DIN 18531",
+          "subcategory": "Abdichtung von Dächern u. Balkonen DIN 18531",
           "description": "Dachabdichtung, 1-lag. PVC-Folie 1,5 DE/E1-PVC-P-NB",
           "unit": "m²",
           "unitRaw": "m²",
@@ -8695,7 +8695,7 @@
           "priceRaw": "26,90"
         },
         {
-          "subcategory": "° Abdichtung von Dächern u. Balkonen DIN 18531",
+          "subcategory": "Abdichtung von Dächern u. Balkonen DIN 18531",
           "description": "Dachabdichtung, 1-lag, Kunststoffb. FPO 1,5 ,bitumenvertr.",
           "unit": "m²",
           "unitRaw": "m²",
@@ -8703,7 +8703,7 @@
           "priceRaw": "27,40"
         },
         {
-          "subcategory": "° Abdichtung von Dächern u. Balkonen DIN 18531",
+          "subcategory": "Abdichtung von Dächern u. Balkonen DIN 18531",
           "description": "Dachabdichtung, 1-lag. Kunstst. PIB-K-PPV-2,5 auf Holzschalung",
           "unit": "m²",
           "unitRaw": "m²",
@@ -8711,7 +8711,7 @@
           "priceRaw": "27,70"
         },
         {
-          "subcategory": "° Abdichtung von Dächern u. Balkonen DIN 18531",
+          "subcategory": "Abdichtung von Dächern u. Balkonen DIN 18531",
           "description": "Dachabdichtung, 2-lag. K1, Bitumenbahn G200 S4+PYE-G200 S4",
           "unit": "m²",
           "unitRaw": "m²",
@@ -8719,7 +8719,7 @@
           "priceRaw": "34,70"
         },
         {
-          "subcategory": "° Abdichtung von Dächern u. Balkonen DIN 18531",
+          "subcategory": "Abdichtung von Dächern u. Balkonen DIN 18531",
           "description": "Dachabdicht., 2-lag. K1, Bitumenbahn,selbstkl.PV200DD+PYE 200DD",
           "unit": "m²",
           "unitRaw": "m²",
@@ -8727,7 +8727,7 @@
           "priceRaw": "36,80"
         },
         {
-          "subcategory": "° Abdichtung von Dächern u. Balkonen DIN 18531",
+          "subcategory": "Abdichtung von Dächern u. Balkonen DIN 18531",
           "description": "Dachabdicht., 2-lag., IA, Elastomerbit.-bahn,2xPYE-G200S4",
           "unit": "m²",
           "unitRaw": "m²",
@@ -8735,7 +8735,7 @@
           "priceRaw": "36,40"
         },
         {
-          "subcategory": "° Abdichtung von Dächern u. Balkonen DIN 18531",
+          "subcategory": "Abdichtung von Dächern u. Balkonen DIN 18531",
           "description": "Dachabdicht., 2-lag., IIA, Bitumenb.V60 S4+PYE G200 S4",
           "unit": "m²",
           "unitRaw": "m²",
@@ -8743,7 +8743,7 @@
           "priceRaw": "32,60"
         },
         {
-          "subcategory": "° Abdichtung von Dächern u. Balkonen DIN 18531",
+          "subcategory": "Abdichtung von Dächern u. Balkonen DIN 18531",
           "description": "Dachabdicht., 2-lag.IA, Bitum. + Kunstst.-bahn, PYE G200+EPDM",
           "unit": "m²",
           "unitRaw": "m²",
@@ -8751,7 +8751,7 @@
           "priceRaw": "42,50"
         },
         {
-          "subcategory": "° Abdichtung von Dächern u. Balkonen DIN 18531",
+          "subcategory": "Abdichtung von Dächern u. Balkonen DIN 18531",
           "description": "Dachabdichtung, IA ,Flüssigkunststoff, PUR 1K",
           "unit": "m²",
           "unitRaw": "m²",
@@ -8759,7 +8759,7 @@
           "priceRaw": "59,40"
         },
         {
-          "subcategory": "° Abdichtung von Dächern u. Balkonen DIN 18531",
+          "subcategory": "Abdichtung von Dächern u. Balkonen DIN 18531",
           "description": "Dachabdichtung, IA, Flüssigkunstst., 2-kompon. 2K PUR, streichen",
           "unit": "m²",
           "unitRaw": "m²",
@@ -8767,7 +8767,7 @@
           "priceRaw": "84,80"
         },
         {
-          "subcategory": "° Abdichtung von Dächern u. Balkonen DIN 18531",
+          "subcategory": "Abdichtung von Dächern u. Balkonen DIN 18531",
           "description": "Dachanschluss, Bitumenb. DO (obere Lage) als Streifen",
           "unit": "m",
           "unitRaw": "m",
@@ -8775,7 +8775,7 @@
           "priceRaw": "9,80"
         },
         {
-          "subcategory": "° Abdichtung von Dächern u. Balkonen DIN 18531",
+          "subcategory": "Abdichtung von Dächern u. Balkonen DIN 18531",
           "description": "Dachanschluss, Bitumenb. DU (untere Lage) als Streifen",
           "unit": "m",
           "unitRaw": "m",
@@ -8783,7 +8783,7 @@
           "priceRaw": "12,90"
         },
         {
-          "subcategory": "° Abdichtung von Dächern u. Balkonen DIN 18531",
+          "subcategory": "Abdichtung von Dächern u. Balkonen DIN 18531",
           "description": "Dachrandanschluss mit 2-lag. Bitumenbahn",
           "unit": "m",
           "unitRaw": "m",
@@ -8791,7 +8791,7 @@
           "priceRaw": "35,30"
         },
         {
-          "subcategory": "° Abdichtung von Dächern u. Balkonen DIN 18531",
+          "subcategory": "Abdichtung von Dächern u. Balkonen DIN 18531",
           "description": "Dachrandabschluss an Rinne mit Bitumenbahn",
           "unit": "m",
           "unitRaw": "m",
@@ -8799,7 +8799,7 @@
           "priceRaw": "16,80"
         },
         {
-          "subcategory": "° Abdichtung von Dächern u. Balkonen DIN 18531",
+          "subcategory": "Abdichtung von Dächern u. Balkonen DIN 18531",
           "description": "Wandanschluss 1+2.Lage mit Bitumenbahn",
           "unit": "m",
           "unitRaw": "m",
@@ -8807,7 +8807,7 @@
           "priceRaw": "16,90"
         },
         {
-          "subcategory": "° Abdichtung von Dächern u. Balkonen DIN 18531",
+          "subcategory": "Abdichtung von Dächern u. Balkonen DIN 18531",
           "description": "Wandanschl. m. Bitumenb. G200 + PYP-PV200S, b=333mm",
           "unit": "m",
           "unitRaw": "m",
@@ -8815,7 +8815,7 @@
           "priceRaw": "21,30"
         },
         {
-          "subcategory": "° Abdichtung von Dächern u. Balkonen DIN 18531",
+          "subcategory": "Abdichtung von Dächern u. Balkonen DIN 18531",
           "description": "Wandanschl. m. Kunstst. PVC-P,nb, 1,5, faserverstärkt",
           "unit": "m",
           "unitRaw": "m",
@@ -8823,7 +8823,7 @@
           "priceRaw": "16,60"
         },
         {
-          "subcategory": "° Abdichtung von Dächern u. Balkonen DIN 18531",
+          "subcategory": "Abdichtung von Dächern u. Balkonen DIN 18531",
           "description": "Wandanschl. m. Kunstst.-Bahn, 1-lag. EVA, kasch.2,2, b=333mm",
           "unit": "m",
           "unitRaw": "m",
@@ -8831,7 +8831,7 @@
           "priceRaw": "14,30"
         },
         {
-          "subcategory": "° Abdichtung von Dächern u. Balkonen DIN 18531",
+          "subcategory": "Abdichtung von Dächern u. Balkonen DIN 18531",
           "description": "Dichtungsanschluss an Attika mit 2-lag. Bitumenbahn",
           "unit": "m",
           "unitRaw": "m",
@@ -8839,7 +8839,7 @@
           "priceRaw": "28,80"
         },
         {
-          "subcategory": "° Abdichtung von Dächern u. Balkonen DIN 18531",
+          "subcategory": "Abdichtung von Dächern u. Balkonen DIN 18531",
           "description": "Dichtungsanschluss an Ablauf mit Klebeflansch d=10-25cm",
           "unit": "St",
           "unitRaw": "St",
@@ -8847,7 +8847,7 @@
           "priceRaw": "31,40"
         },
         {
-          "subcategory": "° Abdichtung von Dächern u. Balkonen DIN 18531",
+          "subcategory": "Abdichtung von Dächern u. Balkonen DIN 18531",
           "description": "Dichtungsabschluss an Rohrdurchführ., m. Kunstst-flansch d=10cm",
           "unit": "St",
           "unitRaw": "St",
@@ -8855,7 +8855,7 @@
           "priceRaw": "39,30"
         },
         {
-          "subcategory": "° Abdichtung von Dächern u. Balkonen DIN 18531",
+          "subcategory": "Abdichtung von Dächern u. Balkonen DIN 18531",
           "description": "Dichtungsanschl. an Schornstein mit Blecheinfass.+Kunstst.-mansch",
           "unit": "St",
           "unitRaw": "St",
@@ -8863,7 +8863,7 @@
           "priceRaw": "115,00"
         },
         {
-          "subcategory": "° Abdichtung von Dächern u. Balkonen DIN 18531",
+          "subcategory": "Abdichtung von Dächern u. Balkonen DIN 18531",
           "description": "Dichtungsanschl. für Eckausbildung mit Alu-Klemmprofil",
           "unit": "M",
           "unitRaw": "M",
@@ -8871,7 +8871,7 @@
           "priceRaw": "29,60"
         },
         {
-          "subcategory": "° Abdichtung von Dächern u. Balkonen DIN 18531",
+          "subcategory": "Abdichtung von Dächern u. Balkonen DIN 18531",
           "description": "Dichtungsanschluss f. Durchdringung, DN100 - 150",
           "unit": "St",
           "unitRaw": "St",
@@ -8879,7 +8879,7 @@
           "priceRaw": "34,20"
         },
         {
-          "subcategory": "° Abdichtung von Dächern u. Balkonen DIN 18531",
+          "subcategory": "Abdichtung von Dächern u. Balkonen DIN 18531",
           "description": "Dichtung über Bewegungsfugen, Typ1 bis 5mm, mit 1K PU-Dichtstoff",
           "unit": "m",
           "unitRaw": "m",
@@ -8887,7 +8887,7 @@
           "priceRaw": "45,70"
         },
         {
-          "subcategory": "° Abdichtung von Dächern u. Balkonen DIN 18531",
+          "subcategory": "Abdichtung von Dächern u. Balkonen DIN 18531",
           "description": "Balkonabdichtung, 2-lag.mit G200 S4+ PYE-PV200 S5",
           "unit": "m²",
           "unitRaw": "m²",
@@ -8895,7 +8895,7 @@
           "priceRaw": "32,60"
         },
         {
-          "subcategory": "° Abdichtung von Dächern u. Balkonen DIN 18531",
+          "subcategory": "Abdichtung von Dächern u. Balkonen DIN 18531",
           "description": "Balkonabdichtung , 1-lag. mit PMMA Kunststoff, flüssig, 2mm",
           "unit": "m²",
           "unitRaw": "m²",
@@ -8903,7 +8903,7 @@
           "priceRaw": "79,30"
         },
         {
-          "subcategory": "° Abdichtung von Dächern u. Balkonen DIN 18531",
+          "subcategory": "Abdichtung von Dächern u. Balkonen DIN 18531",
           "description": "Terrassenabdichtung, 2-lag. G 200 S4+Kautschukbahn EPDM",
           "unit": "m²",
           "unitRaw": "m²",
@@ -9998,10 +9998,10 @@
         "Kupferrohre",
         "Bogen",
         "PVC- U-Rohre",
-        "PVC-U-Winkel 90°",
+        "PVC-U-Winkel 90",
         "Aluminium- Mehrschichtverbundrohre",
         "Rohrleitungen aus Edelstahl",
-        "PE-Xc Rohre [ Polyethylenrohr mit höherer Temperatur-beständigkeit ]",
+        "PE-Xc Rohre [ Polyethylenrohr mit höherer Temperatur-beständigkeit",
         "Sanitärobjekte u. Ausstattung (Diese Aufstellung dient nur zur Vorabinfo, da die Angebote für Objekte und Ausstattung auf dem Markt ständig varieren.)",
         "Ausstattungen (Preisangaben nur zur Vorab-Info, da sich ständig ändernde Angebote)",
         "Zubehör vom Fachhandel ohne Montage (Nettopreise ohne Versand-oder Transportkosten - nur zur Preisinfo)"
@@ -10169,7 +10169,7 @@
           "priceRaw": "7,00"
         },
         {
-          "subcategory": "PVC-U-Winkel 90°",
+          "subcategory": "PVC-U-Winkel 90",
           "description": "PVC-U-Winkel 90° mit Klebemuffe liefern und einsetzen; d=16mm",
           "unit": "St",
           "unitRaw": "St",
@@ -10177,7 +10177,7 @@
           "priceRaw": "5,80"
         },
         {
-          "subcategory": "PVC-U-Winkel 90°",
+          "subcategory": "PVC-U-Winkel 90",
           "description": "PVC-U-Winkel 90° d = 20 mm",
           "unit": "St",
           "unitRaw": "St",
@@ -10185,7 +10185,7 @@
           "priceRaw": "5,80"
         },
         {
-          "subcategory": "PVC-U-Winkel 90°",
+          "subcategory": "PVC-U-Winkel 90",
           "description": "PVC-U-Winkel 90° d = 25 mm",
           "unit": "St",
           "unitRaw": "St",
@@ -10193,7 +10193,7 @@
           "priceRaw": "5,80"
         },
         {
-          "subcategory": "PVC-U-Winkel 90°",
+          "subcategory": "PVC-U-Winkel 90",
           "description": "PVC-U-Winkel 90° d = 32 mm",
           "unit": "St",
           "unitRaw": "St",
@@ -10201,7 +10201,7 @@
           "priceRaw": "6,30"
         },
         {
-          "subcategory": "PVC-U-Winkel 90°",
+          "subcategory": "PVC-U-Winkel 90",
           "description": "T-Stück für PVC-U-Rohre liefern und montieren; Abm.: 16 mm",
           "unit": "St",
           "unitRaw": "St",
@@ -10209,7 +10209,7 @@
           "priceRaw": "6,30"
         },
         {
-          "subcategory": "PVC-U-Winkel 90°",
+          "subcategory": "PVC-U-Winkel 90",
           "description": "T-Stück für PVC-Rohre 20 mm",
           "unit": "St",
           "unitRaw": "St",
@@ -10217,7 +10217,7 @@
           "priceRaw": "6,30"
         },
         {
-          "subcategory": "PVC-U-Winkel 90°",
+          "subcategory": "PVC-U-Winkel 90",
           "description": "T-Stück für PVC-Rohre 25 mm",
           "unit": "St",
           "unitRaw": "St",
@@ -10225,7 +10225,7 @@
           "priceRaw": "6,30"
         },
         {
-          "subcategory": "PVC-U-Winkel 90°",
+          "subcategory": "PVC-U-Winkel 90",
           "description": "T-Stück für PVC-Rohre 32 mm",
           "unit": "St",
           "unitRaw": "St",
@@ -10233,7 +10233,7 @@
           "priceRaw": "7,60"
         },
         {
-          "subcategory": "PVC-U-Winkel 90°",
+          "subcategory": "PVC-U-Winkel 90",
           "description": "T-Stück für PVC-Rohre 40 mm",
           "unit": "St",
           "unitRaw": "St",
@@ -10241,7 +10241,7 @@
           "priceRaw": "8,70"
         },
         {
-          "subcategory": "PVC-U-Winkel 90°",
+          "subcategory": "PVC-U-Winkel 90",
           "description": "Reduzierstück für PVC-U-Rohre liefern und montieren; Abm.: 20/16 mm",
           "unit": "St",
           "unitRaw": "St",
@@ -10249,7 +10249,7 @@
           "priceRaw": "6,30"
         },
         {
-          "subcategory": "PVC-U-Winkel 90°",
+          "subcategory": "PVC-U-Winkel 90",
           "description": "Reduzierstück für PVC-Rohre 25/20 mm",
           "unit": "St",
           "unitRaw": "St",
@@ -10257,7 +10257,7 @@
           "priceRaw": "8,20"
         },
         {
-          "subcategory": "PVC-U-Winkel 90°",
+          "subcategory": "PVC-U-Winkel 90",
           "description": "Reduzierstück für PVC-Rohre 32/25 mm",
           "unit": "St",
           "unitRaw": "St",
@@ -10265,7 +10265,7 @@
           "priceRaw": "8,20"
         },
         {
-          "subcategory": "PVC-U-Winkel 90°",
+          "subcategory": "PVC-U-Winkel 90",
           "description": "Reduzierstück für PVC-Rohre 40/32 mm",
           "unit": "St",
           "unitRaw": "St",
@@ -10377,7 +10377,7 @@
           "priceRaw": "7,10"
         },
         {
-          "subcategory": "PE-Xc Rohre [ Polyethylenrohr mit höherer Temperatur-beständigkeit ]",
+          "subcategory": "PE-Xc Rohre [ Polyethylenrohr mit höherer Temperatur-beständigkeit",
           "description": "Leitungsrohr aus Polyethylen, 5 Schichten Verbundrohr, temperatur u. korrosionsbest. für Trinkwasserleitung liefern u. verlegen Abm. d = 16 x 2,0mm",
           "unit": "m",
           "unitRaw": "m",
@@ -10385,7 +10385,7 @@
           "priceRaw": "8,60"
         },
         {
-          "subcategory": "PE-Xc Rohre [ Polyethylenrohr mit höherer Temperatur-beständigkeit ]",
+          "subcategory": "PE-Xc Rohre [ Polyethylenrohr mit höherer Temperatur-beständigkeit",
           "description": "Leitungsrohr aus Polyethylen, d = 20mm",
           "unit": "m",
           "unitRaw": "m",
@@ -10393,7 +10393,7 @@
           "priceRaw": "9,20"
         },
         {
-          "subcategory": "PE-Xc Rohre [ Polyethylenrohr mit höherer Temperatur-beständigkeit ]",
+          "subcategory": "PE-Xc Rohre [ Polyethylenrohr mit höherer Temperatur-beständigkeit",
           "description": "Alu-Verbundrohr d=16 x 2,0mm mit 6 mm PE-Isolierung liefern u. verlegen",
           "unit": "m",
           "unitRaw": "m",
@@ -10401,7 +10401,7 @@
           "priceRaw": "9,70"
         },
         {
-          "subcategory": "PE-Xc Rohre [ Polyethylenrohr mit höherer Temperatur-beständigkeit ]",
+          "subcategory": "PE-Xc Rohre [ Polyethylenrohr mit höherer Temperatur-beständigkeit",
           "description": "Alu-Verbundrohr d=20 x 2,0 mm mit 6 mm wie vor",
           "unit": "m",
           "unitRaw": "m",
@@ -10409,7 +10409,7 @@
           "priceRaw": "10,60"
         },
         {
-          "subcategory": "PE-Xc Rohre [ Polyethylenrohr mit höherer Temperatur-beständigkeit ]",
+          "subcategory": "PE-Xc Rohre [ Polyethylenrohr mit höherer Temperatur-beständigkeit",
           "description": "Presswinkel 90° 16 x 2 mm liefern u. einbauen",
           "unit": "St",
           "unitRaw": "St",
@@ -10417,7 +10417,7 @@
           "priceRaw": "7,50"
         },
         {
-          "subcategory": "PE-Xc Rohre [ Polyethylenrohr mit höherer Temperatur-beständigkeit ]",
+          "subcategory": "PE-Xc Rohre [ Polyethylenrohr mit höherer Temperatur-beständigkeit",
           "description": "Presswinkel 90°, 20 x 2mm wie vor",
           "unit": "St",
           "unitRaw": "St",
@@ -10425,7 +10425,7 @@
           "priceRaw": "8,20"
         },
         {
-          "subcategory": "PE-Xc Rohre [ Polyethylenrohr mit höherer Temperatur-beständigkeit ]",
+          "subcategory": "PE-Xc Rohre [ Polyethylenrohr mit höherer Temperatur-beständigkeit",
           "description": "Pressfitting T-Stück, Mittelabgang erweitert 16 bis 20mm",
           "unit": "St",
           "unitRaw": "St",
@@ -10433,7 +10433,7 @@
           "priceRaw": "9,90"
         },
         {
-          "subcategory": "PE-Xc Rohre [ Polyethylenrohr mit höherer Temperatur-beständigkeit ]",
+          "subcategory": "PE-Xc Rohre [ Polyethylenrohr mit höherer Temperatur-beständigkeit",
           "description": "Wandwinkel/Formstück für PE-X Rohre / Klemmverbindung mit Innengewinde Abmess.: d = 16 mm x 2 auf 1/2\"/ Klemmverb.",
           "unit": "St",
           "unitRaw": "St",
@@ -10441,7 +10441,7 @@
           "priceRaw": "11,60"
         },
         {
-          "subcategory": "PE-Xc Rohre [ Polyethylenrohr mit höherer Temperatur-beständigkeit ]",
+          "subcategory": "PE-Xc Rohre [ Polyethylenrohr mit höherer Temperatur-beständigkeit",
           "description": "Wandwinkel/Formstück für PE-X Rohre, wie vor d = 18 mm x 2 auf 1/2\"/ Klemmverb",
           "unit": "St",
           "unitRaw": "St",
@@ -10449,7 +10449,7 @@
           "priceRaw": "11,60"
         },
         {
-          "subcategory": "PE-Xc Rohre [ Polyethylenrohr mit höherer Temperatur-beständigkeit ]",
+          "subcategory": "PE-Xc Rohre [ Polyethylenrohr mit höherer Temperatur-beständigkeit",
           "description": "Pressfitting Kupplung/Formstück für PE-X-Rohr mit Klemmverbindung, Abm.: 16 bis 20 mm",
           "unit": "St",
           "unitRaw": "St",
