@@ -21,3 +21,11 @@
 - The `nx-generate` skill handles generator discovery internally - don't call nx_docs just to look up generator syntax
 
 <!-- nx configuration end-->
+
+# Knowledge graph (graphify)
+
+This repo uses **graphify** for a navigable knowledge graph of the codebase.
+
+- For questions about architecture or file/dependency relationships, query the graph first (`/graphify` or `graphify query "..."`) instead of re-deriving from scratch.
+- Keep it healthy: rebuild with `/graphify` after significant structural changes (new apps/libs, dependency rewiring, moved modules).
+- The graph output (`graphify-out/`) is **gitignored** — a fresh clone has none until rebuilt. If `graphify-out/graph.json` is missing, regenerate before relying on it.
