@@ -14,6 +14,7 @@
     "db:generate": "prisma generate",
     "db:studio": "prisma studio",
     "db:reset": "prisma migrate reset",
+    "db:seed": "node --import @swc-node/register/esm-register libs/data-access/prisma/seed.ts",
     "postinstall": "prisma generate"
   },
   "private": true,
@@ -81,11 +82,19 @@
     "@nestjs/core": "^11.0.0",
     "@nestjs/platform-express": "^11.0.0",
     "@prisma/adapter-better-sqlite3": "^7.8.0",
+    "@prisma/adapter-pg": "^7.8.0",
     "@prisma/client": "^7.8.0",
+    "@types/jsonwebtoken": "^9.0.10",
+    "@types/pg": "^8.20.0",
     "better-sqlite3": "^12.11.1",
+    "class-transformer": "^0.5.1",
+    "class-validator": "^0.15.1",
     "dotenv": "^17.4.2",
+    "jsonwebtoken": "^9.0.3",
+    "pg": "^8.22.0",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
+    "react-router-dom": "^7.18.0",
     "reflect-metadata": "^0.2.0",
     "rxjs": "^7.8.0"
   }
