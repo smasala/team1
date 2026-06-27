@@ -1,10 +1,11 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { PrismaService } from 'data-access';
 import type { AiDraftLine, AiDraftResponse } from 'shared-types';
 import { computeTotals, lineTotal, round2 } from '../common/totals';
 import type { AiDraftDto } from './dto/ai-draft.dto';
+import { geminiParsePrompt, isGeminiConfigured } from './gemini';
 import { expandTerms } from './language';
-import { parsePrompt } from './offer-parser';
+import { parsePrompt, type ParsedSegment } from './offer-parser';
 
 const DEFAULT_TAX_RATE = 0.19; // German MwSt.
 
@@ -37,18 +38,33 @@ const makeTitle = (prompt: string): string => {
  */
 @Injectable()
 export class AiService {
+  private readonly logger = new Logger(AiService.name);
+
   constructor(private readonly prisma: PrismaService) {}
 
-  async draftOffer(dto: AiDraftDto): Promise<AiDraftResponse> {
-    const segments = parsePrompt(dto.prompt);
+  async draftOffer(
+    organisationId: string,
+    dto: AiDraftDto,
+  ): Promise<AiDraftResponse> {
     const taxRate = dto.taxRate ?? DEFAULT_TAX_RATE;
 
     const lines: AiDraftLine[] = [];
     const notes: string[] = [];
     let currency = 'EUR';
 
+    const { segments, source } = await this.segment(dto.prompt);
+    notes.push(
+      source === 'gemini'
+        ? 'Drafted with Gemini.'
+        : 'Drafted with the built-in parser.',
+    );
+
     for (const seg of segments) {
-      const best = await this.bestMatch(expandTerms(seg.terms), seg.unit);
+      const best = await this.bestMatch(
+        organisationId,
+        expandTerms(seg.terms),
+        seg.unit,
+      );
       if (best) {
         currency = best.item.currency;
         lines.push({
@@ -95,8 +111,33 @@ export class AiService {
     };
   }
 
+  /**
+   * Turn a prompt into line-item segments. Prefers a (non-deterministic) Gemini
+   * call when GEMINI_API_KEY is set, falling back to the deterministic regex
+   * parser when the key is missing or the API errors — so the drafter always
+   * works offline and in tests.
+   */
+  private async segment(
+    prompt: string,
+  ): Promise<{ segments: ParsedSegment[]; source: 'gemini' | 'local' }> {
+    if (isGeminiConfigured()) {
+      try {
+        const segments = await geminiParsePrompt(prompt);
+        if (segments.length) return { segments, source: 'gemini' };
+      } catch (err) {
+        this.logger.warn(
+          `Gemini draft failed, falling back to local parser: ${
+            err instanceof Error ? err.message : String(err)
+          }`,
+        );
+      }
+    }
+    return { segments: parsePrompt(prompt), source: 'local' };
+  }
+
   /** Best catalogue item for a set of search terms, scored by term coverage. */
   private async bestMatch(
+    organisationId: string,
     search: string[],
     unit: string | null,
   ): Promise<Match | null> {
@@ -104,6 +145,7 @@ export class AiService {
 
     const candidates = (await this.prisma.item.findMany({
       where: {
+        category: { organisationId },
         OR: search.map((t) => ({
           description: { contains: t, mode: 'insensitive' as const },
         })),
