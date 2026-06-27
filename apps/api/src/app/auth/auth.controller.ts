@@ -16,9 +16,9 @@ export class AuthController {
     return this.auth.devLogin();
   }
 
-  /** Current authenticated profile. */
+  /** Current authenticated profile (provisions the user row if new). */
   @Get('me')
   me(@CurrentUser() user: AuthUser): Promise<AuthUser> {
-    return this.auth.me(user.id);
+    return this.auth.me(user);
   }
 }

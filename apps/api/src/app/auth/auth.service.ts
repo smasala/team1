@@ -77,10 +77,17 @@ export class AuthService {
     };
   }
 
-  /** Load the full profile for an authenticated user. */
-  async me(userId: string): Promise<AuthUser> {
-    const user = await this.prisma.user.findUnique({ where: { id: userId } });
-    if (!user) throw new UnauthorizedException('User no longer exists');
+  /**
+   * Load the authenticated user's profile, provisioning a User row on first
+   * sight (so real Supabase users auto-create here, not just the seeded test
+   * user). The token is already verified by the guard.
+   */
+  async me(authUser: AuthUser): Promise<AuthUser> {
+    const user = await this.prisma.user.upsert({
+      where: { id: authUser.id },
+      update: {},
+      create: { id: authUser.id, email: authUser.email },
+    });
     return { id: user.id, email: user.email, fullName: user.fullName };
   }
 }

@@ -1,18 +1,20 @@
 import { useState } from 'react';
 import { useAuth } from '../auth/auth-context';
-import { ErrorBanner } from '../components/ui';
+import { ErrorBanner, Field } from '../components/ui';
 
-/** Auth gate. Single action: open the seeded test workspace (dev Supabase auth). */
+/** Auth gate. Supabase email/password when configured, else the dev workspace. */
 export function LoginPage() {
-  const { login } = useAuth();
+  const { mode, signIn } = useAuth();
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const signIn = async () => {
+  const submit = async () => {
     setBusy(true);
     setError(null);
     try {
-      await login();
+      await signIn(email, password);
     } catch (e) {
       setError(e instanceof Error ? e.message : String(e));
       setBusy(false);
@@ -77,13 +79,43 @@ export function LoginPage() {
           ))}
         </ul>
 
+        {mode === 'supabase' && (
+          <div className="stack">
+            <Field label="Email">
+              <input
+                className="input"
+                type="email"
+                autoComplete="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+              />
+            </Field>
+            <Field label="Password">
+              <input
+                className="input"
+                type="password"
+                autoComplete="current-password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                onKeyDown={(e) => e.key === 'Enter' && submit()}
+              />
+            </Field>
+          </div>
+        )}
+
         {error && <ErrorBanner message={error} />}
 
-        <button className="btn primary block" onClick={signIn} disabled={busy}>
-          {busy ? 'Opening…' : 'Open test workspace'}
+        <button className="btn primary block" onClick={submit} disabled={busy}>
+          {busy
+            ? 'Signing in…'
+            : mode === 'supabase'
+              ? 'Sign in'
+              : 'Open test workspace'}
         </button>
         <p className="tiny faint" style={{ textAlign: 'center', margin: 0 }}>
-          Signs in as the seeded Supabase test account.
+          {mode === 'supabase'
+            ? 'Signed in with Supabase.'
+            : 'Signs in as the seeded Supabase test account.'}
         </p>
       </div>
     </div>
