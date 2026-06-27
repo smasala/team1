@@ -38,15 +38,18 @@ model Organisation {
   categories Category[]
 }
 
-/// Mirrors a Supabase Auth user. `id` is the Supabase auth UUID (NOT generated
-/// here) so rows line up 1:1 with auth.users — except in-app "invited" team
-/// members, who get a cuid until they first sign in. The test user seeded by
-/// seed.ts is 68e75f68-1ee2-46f4-9fee-2bbb2613a02d.
+/// An application user. `id` is our own generated cuid (the app's identity key,
+/// referenced by offers/invoices). `authId` separately holds the Supabase Auth
+/// UUID — it is NOT 1:1 with `id`: invited team members exist with no authId
+/// until they first sign in, and the auth provider could change. Login verifies
+/// the password with Supabase, then resolves the User by `authId`. The test user
+/// seeded by seed.ts has authId 68e75f68-1ee2-46f4-9fee-2bbb2613a02d.
 ///
 /// `role`: ADMIN | EMPLOYEE (controls team management). Every user is attached
 /// to an Organisation (provisioned on first sign-in if missing).
 model User {
-  id             String   @id
+  id             String   @id @default(cuid())
+  authId         String?  @unique
   email          String?  @unique
   fullName       String?
   role           String   @default("EMPLOYEE")
@@ -62,7 +65,8 @@ model User {
 }
 
 // ---------------------------------------------------------------------------
-// Catalogue (seeded from scripts/baupreise-catalogue.json with +30% markup)
+// Catalogue (seeded from scripts/baupreise-catalogue.json; +30% markup baked
+// into `price` at seed time)
 // ---------------------------------------------------------------------------
 
 /// Top-level trade category (e.g. "Maurerarbeiten"). Owned by an organisation
@@ -101,18 +105,13 @@ model Subcategory {
   @@index([categoryId])
 }
 
-/// A priced catalogue line. `basePrice` is the untouched baseline from the
-/// source catalogue; `price` is the sell price after the strict markup
-/// (`price = round(basePrice * (1 + markupPct/100), 2)`).
+/// A priced catalogue line. `price` is the single sell price: the source
+/// baseline already has the catalogue-wide markup baked in at seed time.
 model Item {
   id            String   @id @default(cuid())
   description   String
   unit          String
-  unitRaw       String?
-  basePrice     Float
   price         Float
-  markupPct     Float    @default(30)
-  priceRaw      String?
   currency      String   @default("EUR")
   categoryId    String
   subcategoryId String?

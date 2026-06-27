@@ -7,22 +7,17 @@ import {
   IconChevron,
   IconPlus,
   IconSearch,
-  IconTrash,
 } from '../components/icons';
 import {
   EmptyState,
   ErrorBanner,
-  Field,
   Loading,
   Money,
   PageHead,
-  Sheet,
 } from '../components/ui';
 import { useI18n } from '../i18n/i18n';
-import { formatMoney } from '../lib/format';
 import { useAsync } from '../lib/use-async';
-
-const round2 = (n: number) => Math.round((n + Number.EPSILON) * 100) / 100;
+import { ItemSheet } from './item-sheet';
 
 export function CataloguePage() {
   const { t } = useI18n();
@@ -151,11 +146,7 @@ export function CataloguePage() {
                   <div className="grow">
                     <div className="small truncate">{it.description}</div>
                     <div className="tiny faint">
-                      {t('cat.itemMeta', {
-                        base: formatMoney(it.basePrice),
-                        markup: it.markupPct,
-                        unit: it.unit,
-                      })}
+                      {t('cat.itemMeta', { unit: it.unit })}
                     </div>
                   </div>
                   <Money value={it.price} currency={it.currency} hi />
@@ -188,124 +179,5 @@ export function CataloguePage() {
         />
       )}
     </div>
-  );
-}
-
-/** Create or edit a catalogue item. Sell price is shown live from the markup. */
-function ItemSheet({
-  item,
-  categoryId,
-  onClose,
-  onSaved,
-}: {
-  item?: ItemDto;
-  categoryId?: string;
-  onClose: () => void;
-  onSaved: () => void;
-}) {
-  const { t } = useI18n();
-  const [description, setDescription] = useState(item?.description ?? '');
-  const [unit, setUnit] = useState(item?.unit ?? 'St');
-  const [basePrice, setBasePrice] = useState(String(item?.basePrice ?? ''));
-  const [markupPct, setMarkupPct] = useState(String(item?.markupPct ?? 30));
-  const [busy, setBusy] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-
-  const sell = round2(
-    (Number(basePrice) || 0) * (1 + (Number(markupPct) || 0) / 100),
-  );
-
-  const save = async () => {
-    setBusy(true);
-    setError(null);
-    try {
-      const payload = {
-        description,
-        unit,
-        basePrice: Number(basePrice),
-        markupPct: Number(markupPct),
-      };
-      if (item) await api.items.update(item.id, payload);
-      else if (categoryId) await api.items.create({ ...payload, categoryId });
-      onSaved();
-    } catch (e) {
-      setError(e instanceof Error ? e.message : String(e));
-      setBusy(false);
-    }
-  };
-
-  const del = async () => {
-    if (!item) return;
-    setBusy(true);
-    setError(null);
-    try {
-      await api.items.remove(item.id);
-      onSaved();
-    } catch (e) {
-      setError(e instanceof Error ? e.message : String(e));
-      setBusy(false);
-    }
-  };
-
-  return (
-    <Sheet title={item ? t('cat.editItem') : t('cat.newItem')} onClose={onClose}>
-      <div className="stack">
-        {error && <ErrorBanner message={error} />}
-        <Field label={t('cat.description')}>
-          <textarea
-            className="textarea"
-            value={description}
-            onChange={(e) => setDescription(e.target.value)}
-          />
-        </Field>
-        <div className="row" style={{ alignItems: 'flex-end' }}>
-          <Field label={t('common.unit')}>
-            <input
-              className="input"
-              value={unit}
-              onChange={(e) => setUnit(e.target.value)}
-            />
-          </Field>
-          <Field label={t('cat.basePrice')}>
-            <input
-              className="input"
-              type="number"
-              min={0}
-              step="any"
-              value={basePrice}
-              onChange={(e) => setBasePrice(e.target.value)}
-            />
-          </Field>
-        </div>
-        <Field label={t('cat.markup')}>
-          <input
-            className="input"
-            type="number"
-            min={0}
-            step="any"
-            value={markupPct}
-            onChange={(e) => setMarkupPct(e.target.value)}
-          />
-        </Field>
-
-        <div className="row between">
-          <span className="muted">{t('cat.sellPrice')}</span>
-          <Money value={sell} hi />
-        </div>
-
-        <button
-          className="btn primary block"
-          onClick={save}
-          disabled={busy || !description || !basePrice}
-        >
-          {busy ? t('common.saving') : t('cat.saveItem')}
-        </button>
-        {item && (
-          <button className="btn danger block" onClick={del} disabled={busy}>
-            <IconTrash /> {t('cat.deleteItem')}
-          </button>
-        )}
-      </div>
-    </Sheet>
   );
 }

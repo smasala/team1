@@ -3,9 +3,9 @@ import { useAuth } from '../auth/auth-context';
 import { ErrorBanner, Field } from '../components/ui';
 import { useI18n } from '../i18n/i18n';
 
-/** Auth gate. Supabase email/password when configured, else the dev workspace. */
+/** Auth gate. Email/password is verified by the backend against Supabase Auth. */
 export function LoginPage() {
-  const { mode, signIn } = useAuth();
+  const { signIn } = useAuth();
   const { t } = useI18n();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -76,41 +76,39 @@ export function LoginPage() {
           ))}
         </ul>
 
-        {mode === 'supabase' && (
-          <div className="stack">
-            <Field label={t('common.email')}>
-              <input
-                className="input"
-                type="email"
-                autoComplete="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-              />
-            </Field>
-            <Field label={t('login.passwordLabel')}>
-              <input
-                className="input"
-                type="password"
-                autoComplete="current-password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                onKeyDown={(e) => e.key === 'Enter' && submit()}
-              />
-            </Field>
-          </div>
-        )}
+        <div className="stack">
+          <Field label={t('common.email')}>
+            <input
+              className="input"
+              type="email"
+              autoComplete="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+            />
+          </Field>
+          <Field label={t('login.passwordLabel')}>
+            <input
+              className="input"
+              type="password"
+              autoComplete="current-password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              onKeyDown={(e) => e.key === 'Enter' && submit()}
+            />
+          </Field>
+        </div>
 
         {error && <ErrorBanner message={error} />}
 
-        <button className="btn primary block" onClick={submit} disabled={busy}>
-          {busy
-            ? t('login.signingIn')
-            : mode === 'supabase'
-              ? t('login.signIn')
-              : t('login.openWorkspace')}
+        <button
+          className="btn primary block"
+          onClick={submit}
+          disabled={busy || !email || !password}
+        >
+          {busy ? t('login.signingIn') : t('login.signIn')}
         </button>
         <p className="tiny faint" style={{ textAlign: 'center', margin: 0 }}>
-          {mode === 'supabase' ? t('login.supabaseNote') : t('login.devNote')}
+          {t('login.supabaseNote')}
         </p>
       </div>
     </div>

@@ -20,8 +20,7 @@ import { http } from './client';
 export interface ItemInput {
   description: string;
   unit: string;
-  basePrice: number;
-  markupPct?: number;
+  price: number;
   currency?: string;
   categoryId: string;
   subcategoryId?: string | null;
@@ -95,7 +94,8 @@ const qs = (q: object): string => {
 
 export const api = {
   auth: {
-    devLogin: () => http.post<SessionResponse>('/auth/dev-login'),
+    login: (email: string, password: string) =>
+      http.post<SessionResponse>('/auth/login', { email, password }),
     me: () => http.get<AuthUser>('/auth/me'),
   },
 

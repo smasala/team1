@@ -45,8 +45,8 @@
 - [x] B1 Organisation model; org + role on User; organisationId on Offer/Invoice/Category (multi-tenancy)
 - [x] B2 JWT auth context: org_id/app_role claims, guard resolves user+org+role, `@CurrentUser`/`@CurrentOrg`/`@Roles`
 - [x] B3 Org-scope all business APIs (offers, invoices, catalogue, AI matching)
-- [x] B4 Supabase email/password login; dev-login retrieves the seeded test user (no hardcoded provisioning)
-- [x] B5 Gemini-backed (non-deterministic) offer drafting with deterministic local fallback
+- [x] B4 Server-side Supabase email/password login; resolves the app user by `User.authId` (decoupled from `User.id`)
+- [x] B5 Gemini-backed (non-deterministic) offer drafting (Gemini required; no local fallback)
 - [x] B6 Team member CRUD + UI (employees/admins), admin-gated
 - [x] B7 i18n across the whole app (German default, English switch)
 - [x] B8 Rebuild graphify graph; commit + push

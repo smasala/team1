@@ -15,16 +15,10 @@ export class CreateItemDto {
   @MaxLength(40)
   unit!: string;
 
-  /** Untouched baseline price; sell `price` is derived via the markup. */
+  /** The sell price stored as-is (markup already included). */
   @IsNumber()
   @Min(0)
-  basePrice!: number;
-
-  /** Defaults to 30% (the catalogue-wide markup). */
-  @IsOptional()
-  @IsNumber()
-  @Min(0)
-  markupPct?: number;
+  price!: number;
 
   @IsOptional()
   @IsString()
@@ -52,12 +46,7 @@ export class UpdateItemDto {
   @IsOptional()
   @IsNumber()
   @Min(0)
-  basePrice?: number;
-
-  @IsOptional()
-  @IsNumber()
-  @Min(0)
-  markupPct?: number;
+  price?: number;
 
   @IsOptional()
   @IsString()

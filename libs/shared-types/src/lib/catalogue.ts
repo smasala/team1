@@ -1,14 +1,12 @@
 /**
- * Catalogue wire contracts (Category > Subcategory > Item). Prices are the
- * marked-up sell prices; `basePrice` is the untouched baseline.
+ * Catalogue wire contracts (Category > Subcategory > Item). `price` is the single
+ * sell price (the catalogue-wide markup is baked in at seed time).
  */
 export interface ItemDto {
   id: string;
   description: string;
   unit: string;
-  basePrice: number;
   price: number;
-  markupPct: number;
   currency: string;
   categoryId: string;
   subcategoryId: string | null;

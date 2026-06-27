@@ -3,11 +3,11 @@
  * and the Supabase test user.
  *
  * Pricing rule: a STRICT 30% markup is applied to every baseline price from the
- * catalogue. We persist BOTH the untouched baseline (`basePrice`) and the sell
- * price (`price = round(basePrice * 1.30, 2)`) so the markup stays auditable.
+ * catalogue at seed time and stored in the single `price` column — there is no
+ * separate baseline/markup column on Item.
  *
  * Idempotent: the catalogue is wiped and rebuilt on each run, and the test user
- * is upserted, so this is safe to re-run after a crash (ROADMAP convention).
+ * is upserted (by authId), so this is safe to re-run after a crash.
  *
  * Run:  npm run db:seed
  *       (= node --import @swc-node/register/esm-register libs/data-access/prisma/seed.ts)
@@ -20,8 +20,9 @@ import { PrismaClient } from '../src/generated/prisma/client.js';
 
 // --- Constants ------------------------------------------------------------
 
-/** Supabase Auth test user (already exists in auth.users). */
-const TEST_USER_ID = '68e75f68-1ee2-46f4-9fee-2bbb2613a02d';
+/** Supabase Auth UUID of the test user (already exists in auth.users). Stored
+ *  on User.authId — our User.id is a separate generated cuid. */
+const TEST_AUTH_ID = '68e75f68-1ee2-46f4-9fee-2bbb2613a02d';
 
 /** Strict markup applied to every baseline catalogue price. */
 const MARKUP_PCT = 30;
@@ -77,11 +78,12 @@ const prisma = new PrismaClient({
 
 async function seedUser(): Promise<string> {
   // Ensure the test user belongs to a demo organisation, as its admin, so the
-  // org-scoped APIs have a tenant to work against out of the box. The id is the
-  // Supabase Auth UUID, so logging in via Supabase resolves to this very row.
+  // org-scoped APIs have a tenant to work against out of the box. We match on
+  // authId (the Supabase Auth UUID), so logging in via Supabase resolves to this
+  // very row — its own id is a generated cuid.
   const existing = await prisma.user.findUnique({
-    where: { id: TEST_USER_ID },
-    select: { organisationId: true },
+    where: { authId: TEST_AUTH_ID },
+    select: { id: true, organisationId: true },
   });
 
   let organisationId = existing?.organisationId ?? null;
@@ -92,18 +94,18 @@ async function seedUser(): Promise<string> {
     organisationId = org.id;
   }
 
-  await prisma.user.upsert({
-    where: { id: TEST_USER_ID },
+  const user = await prisma.user.upsert({
+    where: { authId: TEST_AUTH_ID },
     update: { organisationId, role: 'ADMIN' },
     create: {
-      id: TEST_USER_ID,
+      authId: TEST_AUTH_ID,
       email: 'test@fieldpro.app',
       fullName: 'Test Tradesman',
       role: 'ADMIN',
       organisationId,
     },
   });
-  console.log(`✓ test user ${TEST_USER_ID} (org ${organisationId}, ADMIN)`);
+  console.log(`✓ test user ${user.id} (authId ${TEST_AUTH_ID}, org ${organisationId}, ADMIN)`);
   return organisationId;
 }
 
@@ -150,11 +152,7 @@ async function seedCatalogue(
         data: cat.items.map((item) => ({
           description: item.description,
           unit: item.unit,
-          unitRaw: item.unitRaw,
-          basePrice: item.price,
           price: applyMarkup(item.price),
-          markupPct: MARKUP_PCT,
-          priceRaw: item.priceRaw,
           currency: catalogue.currency ?? 'EUR',
           categoryId: category.id,
           subcategoryId: item.subcategory

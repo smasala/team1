@@ -1,10 +1,16 @@
 /**
  * Auth wire contracts. Shared by the API (token issue/verify) and the web app
  * (session storage). The access token is a Supabase-compatible HS256 JWT signed
- * with SUPABASE_JWT_SECRET (sub = user id, aud/role = "authenticated").
+ * with SUPABASE_JWT_SECRET (sub = our app user id, aud/role = "authenticated").
  */
 /** Team roles. ADMIN can manage organisation members; EMPLOYEE cannot. */
 export type UserRole = 'ADMIN' | 'EMPLOYEE';
+
+/** Credentials POSTed to /auth/login (verified against Supabase Auth). */
+export interface LoginRequest {
+  email: string;
+  password: string;
+}
 
 export interface AuthUser {
   id: string;

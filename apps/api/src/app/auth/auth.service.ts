@@ -13,8 +13,9 @@ import {
   ROLE_ADMIN,
   ROLE_EMPLOYEE,
   SUPABASE_AUDIENCE,
-  TEST_USER_ID,
 } from './auth.constants';
+import type { LoginDto } from './dto/login.dto';
+import { verifyPassword } from './supabase-auth';
 
 interface SupabaseJwtPayload {
   sub: string;
@@ -71,13 +72,14 @@ export class AuthService {
   }
 
   /**
-   * Ensure a User row (and its Organisation) exist, returning the auth context.
-   * New users get a personal organisation and are made its ADMIN; the very first
-   * member of any org is its admin.
+   * Ensure a User row (and its Organisation) exist for a Supabase auth identity,
+   * returning the auth context. Keyed on `authId` (the Supabase UUID) — NOT our
+   * own primary key. New users get a personal organisation and are made its
+   * ADMIN; the very first member of any org is its admin.
    */
-  async provision(id: string, email: string | null): Promise<AuthUser> {
+  async provision(authId: string, email: string | null): Promise<AuthUser> {
     const existing = await this.prisma.user.findUnique({
-      where: { id },
+      where: { authId },
       select: {
         id: true,
         email: true,
@@ -102,9 +104,9 @@ export class AuthService {
       data: { name: email ? `${email}'s organisation` : DEFAULT_ORG_NAME },
     });
     const user = await this.prisma.user.upsert({
-      where: { id },
+      where: { authId },
       update: { organisationId: org.id },
-      create: { id, email, organisationId: org.id, role: ROLE_ADMIN },
+      create: { authId, email, organisationId: org.id, role: ROLE_ADMIN },
       select: {
         id: true,
         email: true,
@@ -124,16 +126,16 @@ export class AuthService {
   }
 
   /**
-   * Dev session: look up the SEEDED test user (linked to the Supabase Auth UUID
-   * by the seed, not provisioned here) and mint a Supabase-shaped access token
-   * carrying its org id and role as custom claims. This mirrors the real flow —
-   * Supabase verifies the password, we resolve the user from our own schema —
-   * without hardcoding/provisioning identity in the login path. Replace with the
-   * Supabase client once the project URL + anon key are wired on the frontend.
+   * Email/password login. The password is verified against the Supabase Auth
+   * service (never in the browser); the returned Supabase UUID is then used to
+   * resolve the matching app user by `authId`. On success we mint our own
+   * Supabase-shaped access token carrying the org id + role as custom claims.
    */
-  async devLogin(): Promise<SessionResponse> {
+  async login(dto: LoginDto): Promise<SessionResponse> {
+    const { authId } = await verifyPassword(dto.email, dto.password);
+
     const user = await this.prisma.user.findUnique({
-      where: { id: TEST_USER_ID },
+      where: { authId },
       select: {
         id: true,
         email: true,
@@ -145,7 +147,7 @@ export class AuthService {
 
     if (!user?.organisationId) {
       throw new UnauthorizedException(
-        `Test user ${TEST_USER_ID} is not seeded. Run "npm run db:seed".`,
+        'No FeldPro account is linked to this login',
       );
     }
 

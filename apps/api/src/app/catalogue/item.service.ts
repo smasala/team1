@@ -4,14 +4,12 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { PrismaService } from 'data-access';
-import { applyMarkup } from '../common/totals';
 import type { CreateItemDto, QueryItemDto, UpdateItemDto } from './dto/item.dto';
 
-const DEFAULT_MARKUP_PCT = 30;
-
 /**
- * CRUD for priced catalogue items. Enforces the markup -> price derivation and
- * inherits tenancy from the parent category (`category.organisationId`).
+ * CRUD for priced catalogue items. `price` is stored as given (markup already
+ * baked in); tenancy is inherited from the parent category
+ * (`category.organisationId`).
  */
 @Injectable()
 export class ItemService {
@@ -45,14 +43,11 @@ export class ItemService {
 
   async create(organisationId: string, dto: CreateItemDto) {
     await this.assertCategory(organisationId, dto.categoryId);
-    const markupPct = dto.markupPct ?? DEFAULT_MARKUP_PCT;
     return this.prisma.item.create({
       data: {
         description: dto.description,
         unit: dto.unit,
-        basePrice: dto.basePrice,
-        markupPct,
-        price: applyMarkup(dto.basePrice, markupPct),
+        price: dto.price,
         currency: dto.currency ?? 'EUR',
         categoryId: dto.categoryId,
         subcategoryId: dto.subcategoryId ?? null,
@@ -61,27 +56,19 @@ export class ItemService {
   }
 
   async update(organisationId: string, id: string, dto: UpdateItemDto) {
-    // Re-derive the sell price whenever the baseline or markup moves.
     const current = await this.prisma.item.findFirst({
       where: { id, category: { organisationId } },
+      select: { id: true },
     });
     if (!current) throw new NotFoundException(`Item ${id} not found`);
     if (dto.categoryId) await this.assertCategory(organisationId, dto.categoryId);
-
-    const basePrice = dto.basePrice ?? current.basePrice;
-    const markupPct = dto.markupPct ?? current.markupPct;
 
     return this.prisma.item.update({
       where: { id },
       data: {
         description: dto.description,
         unit: dto.unit,
-        basePrice: dto.basePrice,
-        markupPct: dto.markupPct,
-        price:
-          dto.basePrice !== undefined || dto.markupPct !== undefined
-            ? applyMarkup(basePrice, markupPct)
-            : undefined,
+        price: dto.price,
         currency: dto.currency,
         categoryId: dto.categoryId,
         subcategoryId: dto.subcategoryId,

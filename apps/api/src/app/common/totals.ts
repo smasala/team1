@@ -4,10 +4,6 @@
 export const round2 = (n: number): number =>
   Math.round((n + Number.EPSILON) * 100) / 100;
 
-/** Sell price for a baseline price under a percentage markup. */
-export const applyMarkup = (basePrice: number, markupPct: number): number =>
-  round2(basePrice * (1 + markupPct / 100));
-
 export interface LineLike {
   quantity: number;
   unitPrice: number;

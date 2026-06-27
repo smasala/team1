@@ -14,7 +14,18 @@
  * external API.
  */
 import { normalizeUnit } from './language';
-import type { ParsedSegment } from './offer-parser';
+
+/** A single billable line extracted from a prompt, ready for catalogue matching. */
+export interface ParsedSegment {
+  /** Original text of this request segment. */
+  text: string;
+  /** Detected quantity (defaults to 1). */
+  quantity: number;
+  /** Canonical unit if one was recognised. */
+  unit: string | null;
+  /** Significant keywords used to look the work up in the catalogue. */
+  terms: string[];
+}
 
 const DEFAULT_MODEL = 'gemini-2.5-flash';
 const ENDPOINT = 'https://generativelanguage.googleapis.com/v1beta/models';
