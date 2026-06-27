@@ -1,48 +1,51 @@
-import { useEffect, useState } from 'react';
-import type { HealthStatus } from 'shared-types';
-import { fetchHealth } from './api-client';
+import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom';
+import { AuthProvider, useAuth } from './auth/auth-context';
+import { AppShell } from './components/app-shell';
+import { Loading } from './components/ui';
+import { AccountPage } from './pages/account-page';
+import { AssistantPage } from './pages/assistant-page';
+import { CataloguePage } from './pages/catalogue-page';
+import { InvoiceDetailPage } from './pages/invoice-detail-page';
+import { InvoicesPage } from './pages/invoices-page';
+import { LoginPage } from './pages/login-page';
+import { OfferDetailPage } from './pages/offer-detail-page';
+import { OffersPage } from './pages/offers-page';
 
-export function App() {
-  const [health, setHealth] = useState<HealthStatus | null>(null);
-  const [error, setError] = useState<string | null>(null);
+function Gate() {
+  const { user, loading } = useAuth();
 
-  useEffect(() => {
-    fetchHealth()
-      .then(setHealth)
-      .catch((e: unknown) => setError(e instanceof Error ? e.message : String(e)));
-  }, []);
+  if (loading) {
+    return (
+      <div className="shell">
+        <Loading />
+      </div>
+    );
+  }
+  if (!user) return <LoginPage />;
 
   return (
-    <main
-      style={{
-        fontFamily: 'system-ui, sans-serif',
-        maxWidth: 480,
-        margin: '0 auto',
-        padding: '2rem',
-      }}
-    >
-      <h1>team1</h1>
-      <p>Nx · React · NestJS · Prisma (SQLite, Supabase-ready)</p>
+    <Routes>
+      <Route element={<AppShell />}>
+        <Route path="/catalogue" element={<CataloguePage />} />
+        <Route path="/offers" element={<OffersPage />} />
+        <Route path="/offers/:id" element={<OfferDetailPage />} />
+        <Route path="/assistant" element={<AssistantPage />} />
+        <Route path="/invoices" element={<InvoicesPage />} />
+        <Route path="/invoices/:id" element={<InvoiceDetailPage />} />
+        <Route path="/account" element={<AccountPage />} />
+        <Route path="*" element={<Navigate to="/offers" replace />} />
+      </Route>
+    </Routes>
+  );
+}
 
-      <section>
-        <h2>API health</h2>
-        {error && <p style={{ color: 'crimson' }}>Cannot reach API: {error}</p>}
-        {!error && !health && <p>Checking…</p>}
-        {health && (
-          <ul>
-            <li>
-              status: <strong>{health.status}</strong>
-            </li>
-            <li>
-              db: <strong>{health.db}</strong>
-            </li>
-            <li>
-              notes: <strong>{health.notes}</strong>
-            </li>
-          </ul>
-        )}
-      </section>
-    </main>
+export function App() {
+  return (
+    <BrowserRouter>
+      <AuthProvider>
+        <Gate />
+      </AuthProvider>
+    </BrowserRouter>
   );
 }
 
