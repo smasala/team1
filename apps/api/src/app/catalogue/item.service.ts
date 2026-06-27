@@ -1,19 +1,27 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  ForbiddenException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { PrismaService } from 'data-access';
 import { applyMarkup } from '../common/totals';
 import type { CreateItemDto, QueryItemDto, UpdateItemDto } from './dto/item.dto';
 
 const DEFAULT_MARKUP_PCT = 30;
 
-/** CRUD for priced catalogue items. Enforces the markup -> price derivation. */
+/**
+ * CRUD for priced catalogue items. Enforces the markup -> price derivation and
+ * inherits tenancy from the parent category (`category.organisationId`).
+ */
 @Injectable()
 export class ItemService {
   constructor(private readonly prisma: PrismaService) {}
 
-  list(query: QueryItemDto) {
+  list(organisationId: string, query: QueryItemDto) {
     const { categoryId, subcategoryId, search, take = 50, skip = 0 } = query;
     return this.prisma.item.findMany({
       where: {
+        category: { organisationId },
         categoryId: categoryId || undefined,
         subcategoryId: subcategoryId || undefined,
         description: search
@@ -26,16 +34,17 @@ export class ItemService {
     });
   }
 
-  async get(id: string) {
-    const item = await this.prisma.item.findUnique({
-      where: { id },
+  async get(organisationId: string, id: string) {
+    const item = await this.prisma.item.findFirst({
+      where: { id, category: { organisationId } },
       include: { category: true, subcategory: true },
     });
     if (!item) throw new NotFoundException(`Item ${id} not found`);
     return item;
   }
 
-  create(dto: CreateItemDto) {
+  async create(organisationId: string, dto: CreateItemDto) {
+    await this.assertCategory(organisationId, dto.categoryId);
     const markupPct = dto.markupPct ?? DEFAULT_MARKUP_PCT;
     return this.prisma.item.create({
       data: {
@@ -51,10 +60,13 @@ export class ItemService {
     });
   }
 
-  async update(id: string, dto: UpdateItemDto) {
+  async update(organisationId: string, id: string, dto: UpdateItemDto) {
     // Re-derive the sell price whenever the baseline or markup moves.
-    const current = await this.prisma.item.findUnique({ where: { id } });
+    const current = await this.prisma.item.findFirst({
+      where: { id, category: { organisationId } },
+    });
     if (!current) throw new NotFoundException(`Item ${id} not found`);
+    if (dto.categoryId) await this.assertCategory(organisationId, dto.categoryId);
 
     const basePrice = dto.basePrice ?? current.basePrice;
     const markupPct = dto.markupPct ?? current.markupPct;
@@ -77,7 +89,22 @@ export class ItemService {
     });
   }
 
-  remove(id: string) {
+  async remove(organisationId: string, id: string) {
+    await this.get(organisationId, id); // tenant scope check
     return this.prisma.item.delete({ where: { id } });
+  }
+
+  /** Assert the target category belongs to the caller's org. */
+  private async assertCategory(
+    organisationId: string,
+    categoryId: string,
+  ): Promise<void> {
+    const found = await this.prisma.category.findFirst({
+      where: { id: categoryId, organisationId },
+      select: { id: true },
+    });
+    if (!found) {
+      throw new ForbiddenException(`Category ${categoryId} not in your organisation`);
+    }
   }
 }

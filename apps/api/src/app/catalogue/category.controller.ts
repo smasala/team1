@@ -7,6 +7,7 @@ import {
   Patch,
   Post,
 } from '@nestjs/common';
+import { CurrentOrg } from '../auth/current-user.decorator';
 import { CategoryService } from './category.service';
 import { CreateCategoryDto, UpdateCategoryDto } from './dto/category.dto';
 
@@ -15,27 +16,31 @@ export class CategoryController {
   constructor(private readonly categories: CategoryService) {}
 
   @Get()
-  list() {
-    return this.categories.list();
+  list(@CurrentOrg() organisationId: string) {
+    return this.categories.list(organisationId);
   }
 
   @Get(':id')
-  get(@Param('id') id: string) {
-    return this.categories.get(id);
+  get(@CurrentOrg() organisationId: string, @Param('id') id: string) {
+    return this.categories.get(organisationId, id);
   }
 
   @Post()
-  create(@Body() dto: CreateCategoryDto) {
-    return this.categories.create(dto);
+  create(@CurrentOrg() organisationId: string, @Body() dto: CreateCategoryDto) {
+    return this.categories.create(organisationId, dto);
   }
 
   @Patch(':id')
-  update(@Param('id') id: string, @Body() dto: UpdateCategoryDto) {
-    return this.categories.update(id, dto);
+  update(
+    @CurrentOrg() organisationId: string,
+    @Param('id') id: string,
+    @Body() dto: UpdateCategoryDto,
+  ) {
+    return this.categories.update(organisationId, id, dto);
   }
 
   @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.categories.remove(id);
+  remove(@CurrentOrg() organisationId: string, @Param('id') id: string) {
+    return this.categories.remove(organisationId, id);
   }
 }

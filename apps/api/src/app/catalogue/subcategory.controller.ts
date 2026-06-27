@@ -8,6 +8,7 @@ import {
   Post,
   Query,
 } from '@nestjs/common';
+import { CurrentOrg } from '../auth/current-user.decorator';
 import {
   CreateSubcategoryDto,
   UpdateSubcategoryDto,
@@ -19,27 +20,37 @@ export class SubcategoryController {
   constructor(private readonly subcategories: SubcategoryService) {}
 
   @Get()
-  list(@Query('categoryId') categoryId?: string) {
-    return this.subcategories.list(categoryId);
+  list(
+    @CurrentOrg() organisationId: string,
+    @Query('categoryId') categoryId?: string,
+  ) {
+    return this.subcategories.list(organisationId, categoryId);
   }
 
   @Get(':id')
-  get(@Param('id') id: string) {
-    return this.subcategories.get(id);
+  get(@CurrentOrg() organisationId: string, @Param('id') id: string) {
+    return this.subcategories.get(organisationId, id);
   }
 
   @Post()
-  create(@Body() dto: CreateSubcategoryDto) {
-    return this.subcategories.create(dto);
+  create(
+    @CurrentOrg() organisationId: string,
+    @Body() dto: CreateSubcategoryDto,
+  ) {
+    return this.subcategories.create(organisationId, dto);
   }
 
   @Patch(':id')
-  update(@Param('id') id: string, @Body() dto: UpdateSubcategoryDto) {
-    return this.subcategories.update(id, dto);
+  update(
+    @CurrentOrg() organisationId: string,
+    @Param('id') id: string,
+    @Body() dto: UpdateSubcategoryDto,
+  ) {
+    return this.subcategories.update(organisationId, id, dto);
   }
 
   @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.subcategories.remove(id);
+  remove(@CurrentOrg() organisationId: string, @Param('id') id: string) {
+    return this.subcategories.remove(organisationId, id);
   }
 }

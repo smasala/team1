@@ -17,7 +17,7 @@ export class OffersService {
     private readonly lines: LineItemsService,
   ) {}
 
-  async create(userId: string, dto: CreateOfferDto) {
+  async create(organisationId: string, userId: string, dto: CreateOfferDto) {
     const resolved = await this.lines.resolve(dto.items ?? []);
     const taxRate = dto.taxRate ?? 0;
     const totals = computeTotals(resolved, taxRate);
@@ -35,31 +35,32 @@ export class OffersService {
         taxRate,
         ...totals,
         userId,
+        organisationId,
         items: { create: resolved },
       },
       include: OFFER_INCLUDE,
     });
   }
 
-  list(userId: string) {
+  list(organisationId: string) {
     return this.prisma.offer.findMany({
-      where: { userId },
+      where: { organisationId },
       orderBy: { createdAt: 'desc' },
       include: OFFER_INCLUDE,
     });
   }
 
-  async get(userId: string, id: string) {
+  async get(organisationId: string, id: string) {
     const offer = await this.prisma.offer.findFirst({
-      where: { id, userId },
+      where: { id, organisationId },
       include: OFFER_INCLUDE,
     });
     if (!offer) throw new NotFoundException(`Offer ${id} not found`);
     return offer;
   }
 
-  async update(userId: string, id: string, dto: UpdateOfferDto) {
-    const existing = await this.get(userId, id); // ownership check
+  async update(organisationId: string, id: string, dto: UpdateOfferDto) {
+    const existing = await this.get(organisationId, id); // tenant scope check
     const taxRate = dto.taxRate ?? existing.taxRate;
 
     let totals: ReturnType<typeof computeTotals> | undefined;
@@ -91,8 +92,8 @@ export class OffersService {
     });
   }
 
-  async remove(userId: string, id: string) {
-    await this.get(userId, id); // ownership check
+  async remove(organisationId: string, id: string) {
+    await this.get(organisationId, id); // tenant scope check
     return this.prisma.offer.delete({ where: { id } });
   }
 }

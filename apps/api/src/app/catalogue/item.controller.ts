@@ -8,6 +8,7 @@ import {
   Post,
   Query,
 } from '@nestjs/common';
+import { CurrentOrg } from '../auth/current-user.decorator';
 import { CreateItemDto, QueryItemDto, UpdateItemDto } from './dto/item.dto';
 import { ItemService } from './item.service';
 
@@ -16,27 +17,31 @@ export class ItemController {
   constructor(private readonly items: ItemService) {}
 
   @Get()
-  list(@Query() query: QueryItemDto) {
-    return this.items.list(query);
+  list(@CurrentOrg() organisationId: string, @Query() query: QueryItemDto) {
+    return this.items.list(organisationId, query);
   }
 
   @Get(':id')
-  get(@Param('id') id: string) {
-    return this.items.get(id);
+  get(@CurrentOrg() organisationId: string, @Param('id') id: string) {
+    return this.items.get(organisationId, id);
   }
 
   @Post()
-  create(@Body() dto: CreateItemDto) {
-    return this.items.create(dto);
+  create(@CurrentOrg() organisationId: string, @Body() dto: CreateItemDto) {
+    return this.items.create(organisationId, dto);
   }
 
   @Patch(':id')
-  update(@Param('id') id: string, @Body() dto: UpdateItemDto) {
-    return this.items.update(id, dto);
+  update(
+    @CurrentOrg() organisationId: string,
+    @Param('id') id: string,
+    @Body() dto: UpdateItemDto,
+  ) {
+    return this.items.update(organisationId, id, dto);
   }
 
   @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.items.remove(id);
+  remove(@CurrentOrg() organisationId: string, @Param('id') id: string) {
+    return this.items.remove(organisationId, id);
   }
 }

@@ -23,7 +23,7 @@ export class InvoicesService {
     private readonly offers: OffersService,
   ) {}
 
-  async create(userId: string, dto: CreateInvoiceDto) {
+  async create(organisationId: string, userId: string, dto: CreateInvoiceDto) {
     const resolved = await this.lines.resolve(dto.items ?? []);
     const taxRate = dto.taxRate ?? 0;
     const totals = computeTotals(resolved, taxRate);
@@ -44,6 +44,7 @@ export class InvoicesService {
         dueAt: dto.dueAt ? new Date(dto.dueAt) : null,
         paidAt: status === 'PAID' ? new Date() : null,
         userId,
+        organisationId,
         items: { create: resolved },
       },
       include: INVOICE_INCLUDE,
@@ -52,11 +53,12 @@ export class InvoicesService {
 
   /** Copy an offer's priced lines into a fresh DRAFT invoice. */
   async generateFromOffer(
+    organisationId: string,
     userId: string,
     offerId: string,
     dto: GenerateInvoiceDto,
   ) {
-    const offer = await this.offers.get(userId, offerId); // ownership + items
+    const offer = await this.offers.get(organisationId, offerId); // tenant + items
     const lines = offer.items.map((i, position) => ({
       itemId: i.itemId,
       description: i.description,
@@ -83,31 +85,32 @@ export class InvoicesService {
         issuedAt: new Date(),
         dueAt: dto.dueAt ? new Date(dto.dueAt) : null,
         userId,
+        organisationId,
         items: { create: lines },
       },
       include: INVOICE_INCLUDE,
     });
   }
 
-  list(userId: string) {
+  list(organisationId: string) {
     return this.prisma.invoice.findMany({
-      where: { userId },
+      where: { organisationId },
       orderBy: { createdAt: 'desc' },
       include: INVOICE_INCLUDE,
     });
   }
 
-  async get(userId: string, id: string) {
+  async get(organisationId: string, id: string) {
     const invoice = await this.prisma.invoice.findFirst({
-      where: { id, userId },
+      where: { id, organisationId },
       include: INVOICE_INCLUDE,
     });
     if (!invoice) throw new NotFoundException(`Invoice ${id} not found`);
     return invoice;
   }
 
-  async update(userId: string, id: string, dto: UpdateInvoiceDto) {
-    const existing = await this.get(userId, id); // ownership check
+  async update(organisationId: string, id: string, dto: UpdateInvoiceDto) {
+    const existing = await this.get(organisationId, id); // tenant scope check
     const taxRate = dto.taxRate ?? existing.taxRate;
 
     let totals: ReturnType<typeof computeTotals> | undefined;
@@ -148,8 +151,8 @@ export class InvoicesService {
     });
   }
 
-  async remove(userId: string, id: string) {
-    await this.get(userId, id); // ownership check
+  async remove(organisationId: string, id: string) {
+    await this.get(organisationId, id); // tenant scope check
     return this.prisma.invoice.delete({ where: { id } });
   }
 }

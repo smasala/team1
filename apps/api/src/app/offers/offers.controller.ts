@@ -8,41 +8,41 @@ import {
   Post,
 } from '@nestjs/common';
 import type { AuthUser } from 'shared-types';
-import { CurrentUser } from '../auth/current-user.decorator';
+import { CurrentOrg, CurrentUser } from '../auth/current-user.decorator';
 import { CreateOfferDto, UpdateOfferDto } from './dto/offer.dto';
 import { OffersService } from './offers.service';
 
-/** All routes are scoped to the authenticated user. */
+/** All routes are scoped to the caller's organisation (multi-tenancy). */
 @Controller('offers')
 export class OffersController {
   constructor(private readonly offers: OffersService) {}
 
   @Get()
-  list(@CurrentUser() user: AuthUser) {
-    return this.offers.list(user.id);
+  list(@CurrentOrg() organisationId: string) {
+    return this.offers.list(organisationId);
   }
 
   @Get(':id')
-  get(@CurrentUser() user: AuthUser, @Param('id') id: string) {
-    return this.offers.get(user.id, id);
+  get(@CurrentOrg() organisationId: string, @Param('id') id: string) {
+    return this.offers.get(organisationId, id);
   }
 
   @Post()
   create(@CurrentUser() user: AuthUser, @Body() dto: CreateOfferDto) {
-    return this.offers.create(user.id, dto);
+    return this.offers.create(user.organisationId, user.id, dto);
   }
 
   @Patch(':id')
   update(
-    @CurrentUser() user: AuthUser,
+    @CurrentOrg() organisationId: string,
     @Param('id') id: string,
     @Body() dto: UpdateOfferDto,
   ) {
-    return this.offers.update(user.id, id, dto);
+    return this.offers.update(organisationId, id, dto);
   }
 
   @Delete(':id')
-  remove(@CurrentUser() user: AuthUser, @Param('id') id: string) {
-    return this.offers.remove(user.id, id);
+  remove(@CurrentOrg() organisationId: string, @Param('id') id: string) {
+    return this.offers.remove(organisationId, id);
   }
 }

@@ -21,7 +21,7 @@ export class SupabaseJwtGuard implements CanActivate {
     private readonly reflector: Reflector,
   ) {}
 
-  canActivate(context: ExecutionContext): boolean {
+  async canActivate(context: ExecutionContext): Promise<boolean> {
     const isPublic = this.reflector.getAllAndOverride<boolean>(IS_PUBLIC_KEY, [
       context.getHandler(),
       context.getClass(),
@@ -34,7 +34,9 @@ export class SupabaseJwtGuard implements CanActivate {
     const token = this.extractToken(request);
     if (!token) throw new UnauthorizedException('Missing Bearer token');
 
-    request.user = this.auth.verify(token);
+    // Resolves user + organisationId + role from the token's claims (or DB),
+    // so handlers never have to thread those ids around manually.
+    request.user = await this.auth.resolveContext(token);
     return true;
   }
 

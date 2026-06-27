@@ -11,3 +11,15 @@ export const CurrentUser = createParamDecorator(
     return request.user;
   },
 );
+
+/**
+ * Injects just the caller's organisation id — the tenant key every business
+ * service is scoped by:
+ *   `@CurrentOrg() organisationId: string`
+ */
+export const CurrentOrg = createParamDecorator(
+  (_data: unknown, ctx: ExecutionContext): string => {
+    const request = ctx.switchToHttp().getRequest<{ user: AuthUser }>();
+    return request.user.organisationId;
+  },
+);
