@@ -21,38 +21,68 @@ datasource db {
 }
 
 // ---------------------------------------------------------------------------
-// Auth
+// Auth & tenancy
 // ---------------------------------------------------------------------------
 
-/// Mirrors a Supabase Auth user. `id` is the Supabase auth UUID (NOT generated
-/// here) so rows line up 1:1 with auth.users. The test user seeded by seed.ts
-/// is 68e75f68-1ee2-46f4-9fee-2bbb2613a02d.
-model User {
-  id        String   @id
-  email     String?  @unique
-  fullName  String?
+/// A tenant. Every User, Offer and Invoice belongs to exactly one organisation;
+/// all business APIs are scoped to the caller's organisationId (multi-tenancy).
+model Organisation {
+  id        String   @id @default(cuid())
+  name      String
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  offers   Offer[]
-  invoices Invoice[]
+  users      User[]
+  offers     Offer[]
+  invoices   Invoice[]
+  categories Category[]
+}
+
+/// Mirrors a Supabase Auth user. `id` is the Supabase auth UUID (NOT generated
+/// here) so rows line up 1:1 with auth.users — except in-app "invited" team
+/// members, who get a cuid until they first sign in. The test user seeded by
+/// seed.ts is 68e75f68-1ee2-46f4-9fee-2bbb2613a02d.
+///
+/// `role`: ADMIN | EMPLOYEE (controls team management). Every user is attached
+/// to an Organisation (provisioned on first sign-in if missing).
+model User {
+  id             String   @id
+  email          String?  @unique
+  fullName       String?
+  role           String   @default("EMPLOYEE")
+  organisationId String?
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  organisation Organisation? @relation(fields: [organisationId], references: [id], onDelete: SetNull)
+  offers       Offer[]
+  invoices     Invoice[]
+
+  @@index([organisationId])
 }
 
 // ---------------------------------------------------------------------------
 // Catalogue (seeded from scripts/baupreise-catalogue.json with +30% markup)
 // ---------------------------------------------------------------------------
 
-/// Top-level trade category (e.g. "Maurerarbeiten").
+/// Top-level trade category (e.g. "Maurerarbeiten"). Owned by an organisation
+/// (multi-tenant catalogue); `slug` is unique per organisation. Subcategories
+/// and items inherit tenancy through their parent category.
 model Category {
-  id        String   @id @default(cuid())
-  slug      String   @unique
-  name      String
-  sourceUrl String?
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id             String   @id @default(cuid())
+  slug           String
+  name           String
+  sourceUrl      String?
+  organisationId String
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
 
+  organisation  Organisation  @relation(fields: [organisationId], references: [id], onDelete: Cascade)
   subcategories Subcategory[]
   items         Item[]
+
+  @@unique([organisationId, slug])
+  @@index([organisationId])
 }
 
 /// Optional grouping inside a category (e.g. "Kalksandsteine"). Unique per
@@ -120,14 +150,17 @@ model Offer {
   taxAmount       Float    @default(0)
   total           Float    @default(0)
   userId          String
+  organisationId  String
   createdAt       DateTime @default(now())
   updatedAt       DateTime @updatedAt
 
-  user     User        @relation(fields: [userId], references: [id], onDelete: Cascade)
-  items    OfferItem[]
-  invoices Invoice[]
+  user         User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  organisation Organisation @relation(fields: [organisationId], references: [id], onDelete: Cascade)
+  items        OfferItem[]
+  invoices     Invoice[]
 
   @@index([userId])
+  @@index([organisationId])
 }
 
 /// A snapshot line on an offer. `itemId` links back to the catalogue (nullable
@@ -176,14 +209,17 @@ model Invoice {
   dueAt           DateTime?
   paidAt          DateTime?
   userId          String
+  organisationId  String
   createdAt       DateTime  @default(now())
   updatedAt       DateTime  @updatedAt
 
-  user  User          @relation(fields: [userId], references: [id], onDelete: Cascade)
-  offer Offer?        @relation(fields: [offerId], references: [id], onDelete: SetNull)
-  items InvoiceItem[]
+  user         User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  organisation Organisation  @relation(fields: [organisationId], references: [id], onDelete: Cascade)
+  offer        Offer?        @relation(fields: [offerId], references: [id], onDelete: SetNull)
+  items        InvoiceItem[]
 
   @@index([userId])
+  @@index([organisationId])
   @@index([offerId])
 }
 

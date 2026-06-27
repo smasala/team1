@@ -75,20 +75,42 @@ const prisma = new PrismaClient({
 
 // --- Seed routines --------------------------------------------------------
 
-async function seedUser(): Promise<void> {
+async function seedUser(): Promise<string> {
+  // Ensure the test user belongs to a demo organisation, as its admin, so the
+  // org-scoped APIs have a tenant to work against out of the box. The id is the
+  // Supabase Auth UUID, so logging in via Supabase resolves to this very row.
+  const existing = await prisma.user.findUnique({
+    where: { id: TEST_USER_ID },
+    select: { organisationId: true },
+  });
+
+  let organisationId = existing?.organisationId ?? null;
+  if (!organisationId) {
+    const org = await prisma.organisation.create({
+      data: { name: 'FeldPro Demo' },
+    });
+    organisationId = org.id;
+  }
+
   await prisma.user.upsert({
     where: { id: TEST_USER_ID },
-    update: {},
+    update: { organisationId, role: 'ADMIN' },
     create: {
       id: TEST_USER_ID,
       email: 'test@fieldpro.app',
       fullName: 'Test Tradesman',
+      role: 'ADMIN',
+      organisationId,
     },
   });
-  console.log(`✓ test user ${TEST_USER_ID}`);
+  console.log(`✓ test user ${TEST_USER_ID} (org ${organisationId}, ADMIN)`);
+  return organisationId;
 }
 
-async function seedCatalogue(catalogue: Catalogue): Promise<void> {
+async function seedCatalogue(
+  catalogue: Catalogue,
+  organisationId: string,
+): Promise<void> {
   // Wipe catalogue tables for a deterministic rebuild. Order respects FKs.
   await prisma.item.deleteMany();
   await prisma.subcategory.deleteMany();
@@ -100,7 +122,7 @@ async function seedCatalogue(catalogue: Catalogue): Promise<void> {
 
   for (const cat of catalogue.categories) {
     const category = await prisma.category.create({
-      data: { slug: cat.slug, name: cat.name, sourceUrl: cat.url },
+      data: { slug: cat.slug, name: cat.name, sourceUrl: cat.url, organisationId },
     });
     categoryCount++;
 
@@ -157,8 +179,8 @@ async function main(): Promise<void> {
   ) as Catalogue;
 
   console.log(`Seeding from ${CATALOGUE_PATH} …`);
-  await seedUser();
-  await seedCatalogue(catalogue);
+  const organisationId = await seedUser();
+  await seedCatalogue(catalogue, organisationId);
   console.log('Seed complete.');
 }
 
