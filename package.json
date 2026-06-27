@@ -16,6 +16,10 @@
     "db:studio": "prisma studio",
     "db:reset": "prisma migrate reset",
     "db:seed": "node --import @swc-node/register/esm-register libs/data-access/prisma/seed.ts",
+    "db:sql": "node --import @swc-node/register/esm-register scripts/db/run-sql.ts",
+    "db:pgvector:ext": "npm run db:sql -- libs/data-access/prisma/sql/01-extensions.sql",
+    "db:pgvector:idx": "npm run db:sql -- libs/data-access/prisma/sql/02-indexes.sql",
+    "db:pgvector": "npm run db:pgvector:ext && npm run db:push && npm run db:pgvector:idx",
     "postinstall": "prisma generate"
   },
   "private": true,

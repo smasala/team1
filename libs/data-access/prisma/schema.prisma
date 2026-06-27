@@ -118,6 +118,14 @@ model Item {
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
 
+  /// 768-dim embedding of `description` for semantic retrieval (Phase 1).
+  /// Typed via Unsupported() because Prisma has no native pgvector type. The
+  /// `vector` extension and the ANN/FTS/trigram indexes are created out-of-band
+  /// by prisma/sql/*.sql (the extensions must exist before `db push` can create
+  /// this column). Nullable: backfilled by the embedding service (#12) at seed
+  /// time and on item create/update.
+  embedding     Unsupported("vector(768)")?
+
   category     Category     @relation(fields: [categoryId], references: [id], onDelete: Cascade)
   subcategory  Subcategory? @relation(fields: [subcategoryId], references: [id], onDelete: SetNull)
   offerItems   OfferItem[]

@@ -121,11 +121,21 @@ request
 > the tracker is empty, recreate from this list.
 
 ### Phase 0 — Contracts & data model (do first; unblocks everything)
-- [ ] **#10** Extend `AiDraftResponse`/`AiDraftLine` (shared-types): per-line `assumptions[]`,
+- [x] **#10** Extend `AiDraftResponse`/`AiDraftLine` (shared-types): per-line `assumptions[]`,
       top-level `coverage` (matched vs manual), section/trade grouping, quantity rationale.
-- [ ] **#11** Enable `pgvector` + `pg_trgm` on Supabase; add `Item.embedding vector(768)`
+      *Done:* `libs/shared-types/src/lib/ai.ts` now has `AiLineStatus`, per-line
+      `status`/`section?`/`assumptions?`/`quantityRationale?`, and `AiDraftCoverage`.
+      `ai.service` populates `status` + `coverage` today (section/assumptions/rationale wait
+      for Phase 2).
+- [~] **#11** Enable `pgvector` + `pg_trgm` on Supabase; add `Item.embedding vector(768)`
       via Prisma `Unsupported()`; German tsvector/FTS index + trigram index on `description`
       (raw SQL — Prisma has no native vector type).
+      *Code done, live DB apply pending:* `Item.embedding Unsupported("vector(768)")?` is in
+      the schema; raw SQL lives in `libs/data-access/prisma/sql/{01-extensions,02-indexes}.sql`
+      applied by `scripts/db/run-sql.ts`. **Apply with `npm run db:pgvector`** (extensions →
+      `db push` → indexes, in that order — db push needs the `vector` type first; it may drop
+      the raw indexes so the script re-applies them). FTS index uses the `german` config;
+      vector index is HNSW `vector_cosine_ops`.
 
 ### Phase 1 — Retrieval foundation
 - [ ] **#12** Embedding service (Gemini `text-embedding-004`, 768-dim); batch-embed all
@@ -172,7 +182,9 @@ request
 | AI orchestrator (segment → match → assemble) | `apps/api/src/app/ai/ai.service.ts` |
 | Gemini call + `ParsedSegment` | `apps/api/src/app/ai/gemini.ts` |
 | Domain language (units, stopwords, EN→DE expansion) | `apps/api/src/app/ai/language.ts` |
-| AI wire contract | `libs/shared-types/src/lib/ai.ts` |
+| AI wire contract (now with coverage/assumptions/sections) | `libs/shared-types/src/lib/ai.ts` |
+| pgvector/FTS/trigram raw SQL (#11) | `libs/data-access/prisma/sql/*.sql` |
+| Raw-SQL runner (PrismaPg adapter, mirrors seed) | `scripts/db/run-sql.ts` |
 | Catalogue item CRUD | `apps/api/src/app/catalogue/item.service.ts` |
 | Auth: login + provision | `apps/api/src/app/auth/auth.service.ts` |
 | Supabase password verify | `apps/api/src/app/auth/supabase-auth.ts` |
@@ -186,6 +198,7 @@ request
 ```bash
 npm install            # postinstall runs prisma generate
 npm run db:push        # sync schema (add --accept-data-loss for column drops)
+npm run db:pgvector    # #11: extensions -> db push -> FTS/trigram/HNSW indexes
 npm run db:seed        # reseed catalogue + test user
 npm run dev            # api :3000/api + web :4200
 npx nx run-many -t typecheck lint test -p api web data-access shared-types

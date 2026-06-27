@@ -1,6 +1,10 @@
 import { Injectable, ServiceUnavailableException } from '@nestjs/common';
 import { PrismaService } from 'data-access';
-import type { AiDraftLine, AiDraftResponse } from 'shared-types';
+import type {
+  AiDraftCoverage,
+  AiDraftLine,
+  AiDraftResponse,
+} from 'shared-types';
 import { computeTotals, lineTotal, round2 } from '../common/totals';
 import type { AiDraftDto } from './dto/ai-draft.dto';
 import {
@@ -32,6 +36,14 @@ const makeTitle = (prompt: string): string => {
   const clean = prompt.trim().replace(/\s+/g, ' ');
   const title = truncate(clean, 70);
   return title.charAt(0).toUpperCase() + title.slice(1);
+};
+
+/** Matched-vs-manual summary derived from the drafted lines' status. */
+const computeCoverage = (lines: AiDraftLine[]): AiDraftCoverage => {
+  const matched = lines.filter((l) => l.status === 'matched').length;
+  const manual = lines.length - matched;
+  const ratio = lines.length ? round2(matched / lines.length) : 1;
+  return { matched, manual, ratio };
 };
 
 /**
@@ -72,6 +84,7 @@ export class AiService {
           unitPrice: best.item.price,
           lineTotal: lineTotal(seg.quantity, best.item.price),
           matchScore: round2(best.score),
+          status: 'matched',
         });
         notes.push(
           `${seg.quantity}${seg.unit ? ` ${seg.unit}` : ''} → “${truncate(
@@ -87,6 +100,7 @@ export class AiService {
           unitPrice: 0,
           lineTotal: 0,
           matchScore: 0,
+          status: 'manual',
         });
         notes.push(`No catalogue match for “${seg.text}” — set a price manually.`);
       }
@@ -101,6 +115,7 @@ export class AiService {
       prompt: dto.prompt,
       title: makeTitle(dto.prompt),
       lines,
+      coverage: computeCoverage(lines),
       ...totals,
       taxRate,
       currency,
