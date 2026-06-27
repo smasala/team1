@@ -32,6 +32,15 @@
 - [x] R5.1 Conventional-commit the scaffold
 - [x] R5.2 Push to origin
 
+## Phase 6 — FeldPro application (built on the scaffold)
+- [x] A1 DB schema (User, Category, Subcategory, Item, Offer, Invoice) + 30% markup seed
+- [x] A2 Backend core: Supabase JWT guard, global exception filter, validation
+- [x] A3 CRUD APIs: catalogue, offers, invoices (+ generate-from-offer)
+- [x] A4 AI offer drafter: natural language → matched catalogue line items
+- [x] A5 React mobile-first shell + "field instrument" theme
+- [x] A6 Feature views: auth, catalogue CRUD, offer/invoice flows, AI chat
+- [x] A7 Switch dev DB to Supabase Postgres (`prisma db push`, no migrations)
+
 ## Conventions (apply throughout)
 - Conventional Commits (`feat:`, `chore:`, `docs:`, `build:`...).
 - Modular: apps thin, logic in libs; one responsibility per module.
