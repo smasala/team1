@@ -10,6 +10,8 @@ import type {
   OfferStatus,
   SessionResponse,
   SubcategoryDto,
+  TeamMemberDto,
+  UserRole,
 } from 'shared-types';
 import { http } from './client';
 
@@ -65,6 +67,12 @@ export type CategoryDetail = CategoryDto & {
   subcategories: SubcategoryDto[];
   _count?: { items: number };
 };
+
+export interface TeamMemberInput {
+  email: string;
+  fullName?: string;
+  role?: UserRole;
+}
 
 export interface ItemQuery {
   categoryId?: string;
@@ -133,5 +141,14 @@ export const api = {
   ai: {
     draftOffer: (req: AiDraftRequest) =>
       http.post<AiDraftResponse>('/ai/draft-offer', req),
+  },
+
+  team: {
+    list: () => http.get<TeamMemberDto[]>('/team/members'),
+    create: (data: TeamMemberInput) =>
+      http.post<TeamMemberDto>('/team/members', data),
+    update: (id: string, data: Partial<Omit<TeamMemberInput, 'email'>>) =>
+      http.patch<TeamMemberDto>(`/team/members/${id}`, data),
+    remove: (id: string) => http.del<void>(`/team/members/${id}`),
   },
 };

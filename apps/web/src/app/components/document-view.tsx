@@ -1,3 +1,4 @@
+import { useI18n } from '../i18n/i18n';
 import { formatMoney, formatPercent } from '../lib/format';
 import { Money } from './ui';
 
@@ -25,6 +26,7 @@ interface DocLike {
 
 /** Read-only rendering of an offer/invoice: customer, line items, totals. */
 export function DocumentView({ doc }: { doc: DocLike }) {
+  const { t } = useI18n();
   const hasCustomer =
     doc.customerName || doc.customerEmail || doc.customerAddress;
 
@@ -33,7 +35,7 @@ export function DocumentView({ doc }: { doc: DocLike }) {
       {hasCustomer && (
         <div className="card">
           <div className="eyebrow" style={{ marginBottom: 8 }}>
-            Bill to
+            {t('doc.billTo')}
           </div>
           {doc.customerName && <div>{doc.customerName}</div>}
           {doc.customerEmail && (
@@ -52,7 +54,7 @@ export function DocumentView({ doc }: { doc: DocLike }) {
               <div className="small truncate">{li.description}</div>
               <div className="tiny faint readout">
                 {li.quantity} × {formatMoney(li.unitPrice, doc.currency)} /{' '}
-                {li.unit ?? 'unit'}
+                {li.unit ?? t('line.unitFallback')}
               </div>
             </div>
             <span className="money">
@@ -63,19 +65,21 @@ export function DocumentView({ doc }: { doc: DocLike }) {
 
         <div className="totals">
           <div className="line">
-            <span>Subtotal</span>
+            <span>{t('doc.subtotal')}</span>
             <span className="money">
               {formatMoney(doc.subtotal, doc.currency)}
             </span>
           </div>
           <div className="line">
-            <span>VAT {formatPercent(doc.taxRate)}</span>
+            <span>
+              {t('doc.vat')} {formatPercent(doc.taxRate)}
+            </span>
             <span className="money">
               {formatMoney(doc.taxAmount, doc.currency)}
             </span>
           </div>
           <div className="line grand">
-            <span>Total</span>
+            <span>{t('doc.total')}</span>
             <Money value={doc.total} currency={doc.currency} hi />
           </div>
         </div>
@@ -84,7 +88,7 @@ export function DocumentView({ doc }: { doc: DocLike }) {
       {doc.notes && (
         <div className="card small muted">
           <div className="eyebrow" style={{ marginBottom: 6 }}>
-            Notes
+            {t('doc.notes')}
           </div>
           {doc.notes}
         </div>

@@ -14,10 +14,12 @@ import {
   Sheet,
   StatusBadge,
 } from '../components/ui';
+import { useI18n } from '../i18n/i18n';
 import { formatDate } from '../lib/format';
 import { useAsync } from '../lib/use-async';
 
 export function InvoicesPage() {
+  const { t } = useI18n();
   const navigate = useNavigate();
   const invoices = useAsync(() => api.invoices.list(), []);
   const [creating, setCreating] = useState(false);
@@ -25,11 +27,11 @@ export function InvoicesPage() {
   return (
     <div>
       <PageHead
-        eyebrow="Billing"
-        title="Invoices"
+        eyebrow={t('invoices.eyebrow')}
+        title={t('invoices.title')}
         action={
           <button className="btn primary sm" onClick={() => setCreating(true)}>
-            <IconPlus /> New
+            <IconPlus /> {t('common.new')}
           </button>
         }
       />
@@ -39,8 +41,8 @@ export function InvoicesPage() {
       ) : invoices.error ? (
         <ErrorBanner message={invoices.error} />
       ) : (invoices.data ?? []).length === 0 ? (
-        <EmptyState icon={<IconInvoice />} title="No invoices yet">
-          Create one, or open an accepted offer and tap “Generate invoice”.
+        <EmptyState icon={<IconInvoice />} title={t('invoices.empty')}>
+          {t('invoices.emptyHint')}
         </EmptyState>
       ) : (
         <div className="stack">
@@ -58,10 +60,11 @@ export function InvoicesPage() {
               <div className="row between" style={{ marginTop: 8 }}>
                 <div className="grow">
                   <div className="truncate">
-                    {inv.customerName ?? 'Invoice'}
+                    {inv.customerName ?? t('invoices.fallback')}
                   </div>
                   <div className="tiny faint">
-                    {inv.items.length} items · issued {formatDate(inv.issuedAt)}
+                    {t('common.items', { n: inv.items.length })} ·{' '}
+                    {t('invoices.issuedShort', { date: formatDate(inv.issuedAt) })}
                   </div>
                 </div>
                 <Money value={inv.total} currency={inv.currency} hi />
@@ -88,6 +91,7 @@ function CreateInvoiceSheet({
   onClose: () => void;
   onCreated: (invoice: InvoiceDto) => void;
 }) {
+  const { t } = useI18n();
   const [customerName, setCustomerName] = useState('');
   const [taxPct, setTaxPct] = useState('19');
   const [dueAt, setDueAt] = useState('');
@@ -113,18 +117,18 @@ function CreateInvoiceSheet({
   };
 
   return (
-    <Sheet title="New invoice" onClose={onClose}>
+    <Sheet title={t('invoices.new')} onClose={onClose}>
       <div className="stack">
         {error && <ErrorBanner message={error} />}
         <div className="row" style={{ alignItems: 'flex-end' }}>
-          <Field label="Customer">
+          <Field label={t('form.customer')}>
             <input
               className="input"
               value={customerName}
               onChange={(e) => setCustomerName(e.target.value)}
             />
           </Field>
-          <Field label="VAT %">
+          <Field label={t('form.vat')}>
             <input
               className="input"
               type="number"
@@ -136,7 +140,7 @@ function CreateInvoiceSheet({
             />
           </Field>
         </div>
-        <Field label="Due date">
+        <Field label={t('invoices.dueDate')}>
           <input
             className="input"
             type="date"
@@ -146,7 +150,7 @@ function CreateInvoiceSheet({
         </Field>
 
         <div className="divider" />
-        <div className="eyebrow">Line items</div>
+        <div className="eyebrow">{t('form.lineItems')}</div>
         <LineEditor lines={lines} setLines={setLines} />
 
         <button
@@ -154,7 +158,7 @@ function CreateInvoiceSheet({
           onClick={save}
           disabled={busy || lines.length === 0}
         >
-          {busy ? 'Creating…' : 'Create invoice'}
+          {busy ? t('common.creating') : t('invoices.create')}
         </button>
       </div>
     </Sheet>

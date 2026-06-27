@@ -5,10 +5,12 @@ import { api } from '../api/endpoints';
 import { DocumentView } from '../components/document-view';
 import { IconBack, IconTrash } from '../components/icons';
 import { ErrorBanner, Loading, PageHead, StatusBadge } from '../components/ui';
+import { useI18n } from '../i18n/i18n';
 import { formatDate } from '../lib/format';
 import { useAsync } from '../lib/use-async';
 
 export function InvoiceDetailPage() {
+  const { t } = useI18n();
   const { id = '' } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const invoice = useAsync(() => api.invoices.get(id), [id]);
@@ -28,7 +30,7 @@ export function InvoiceDetailPage() {
   };
 
   const remove = async () => {
-    if (!window.confirm('Delete this invoice?')) return;
+    if (!window.confirm(t('invoices.confirmDelete'))) return;
     setBusy(true);
     try {
       await api.invoices.remove(id);
@@ -46,18 +48,18 @@ export function InvoiceDetailPage() {
         onClick={() => navigate('/invoices')}
         style={{ marginBottom: 12 }}
       >
-        <IconBack /> Invoices
+        <IconBack /> {t('nav.invoices')}
       </button>
 
       {invoice.loading ? (
         <Loading />
       ) : invoice.error || !inv ? (
-        <ErrorBanner message={invoice.error ?? 'Invoice not found'} />
+        <ErrorBanner message={invoice.error ?? t('invoices.notFound')} />
       ) : (
         <div className="stack">
           <PageHead
-            eyebrow={inv.number ?? 'Invoice'}
-            title={inv.customerName ?? 'Invoice'}
+            eyebrow={inv.number ?? t('invoices.fallback')}
+            title={inv.customerName ?? t('invoices.fallback')}
           />
 
           <div className="row between">
@@ -70,7 +72,7 @@ export function InvoiceDetailPage() {
             >
               {INVOICE_STATUSES.map((s) => (
                 <option key={s} value={s}>
-                  {s}
+                  {t(`status.${s}`)}
                 </option>
               ))}
             </select>
@@ -78,15 +80,15 @@ export function InvoiceDetailPage() {
 
           <div className="card row between small">
             <div>
-              <div className="tiny faint">Issued</div>
+              <div className="tiny faint">{t('invoices.issued')}</div>
               <div className="readout">{formatDate(inv.issuedAt)}</div>
             </div>
             <div>
-              <div className="tiny faint">Due</div>
+              <div className="tiny faint">{t('invoices.due')}</div>
               <div className="readout">{formatDate(inv.dueAt)}</div>
             </div>
             <div>
-              <div className="tiny faint">Paid</div>
+              <div className="tiny faint">{t('invoices.paid')}</div>
               <div className="readout">{formatDate(inv.paidAt)}</div>
             </div>
           </div>
@@ -96,7 +98,7 @@ export function InvoiceDetailPage() {
               className="btn ghost block"
               onClick={() => navigate(`/offers/${inv.offerId}`)}
             >
-              View source offer
+              {t('invoices.viewSource')}
             </button>
           )}
 
@@ -105,7 +107,7 @@ export function InvoiceDetailPage() {
           <DocumentView doc={inv} />
 
           <button className="btn danger block" onClick={remove} disabled={busy}>
-            <IconTrash /> Delete invoice
+            <IconTrash /> {t('invoices.delete')}
           </button>
         </div>
       )}

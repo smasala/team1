@@ -18,12 +18,14 @@ import {
   PageHead,
   Sheet,
 } from '../components/ui';
+import { useI18n } from '../i18n/i18n';
 import { formatMoney } from '../lib/format';
 import { useAsync } from '../lib/use-async';
 
 const round2 = (n: number) => Math.round((n + Number.EPSILON) * 100) / 100;
 
 export function CataloguePage() {
+  const { t } = useI18n();
   const [search, setSearch] = useState('');
   const [cat, setCat] = useState<CategoryListItem | null>(null);
   const [editing, setEditing] = useState<ItemDto | null>(null);
@@ -42,15 +44,15 @@ export function CataloguePage() {
   return (
     <div>
       <PageHead
-        eyebrow="Priced catalogue"
-        title="Catalogue"
-        subtitle="2,869 items · +30% markup applied"
+        eyebrow={t('cat.eyebrow')}
+        title={t('cat.title')}
+        subtitle={t('cat.subtitle')}
       />
 
       <div className="search" style={{ marginBottom: 16 }}>
         <IconSearch />
         <input
-          placeholder="Search all items…"
+          placeholder={t('cat.searchAll')}
           value={search}
           onChange={(e) => {
             setSearch(e.target.value);
@@ -74,15 +76,17 @@ export function CataloguePage() {
                   setCat(c);
                   setSearch('');
                 }}
-                style={{ textAlign: 'left', color: 'inherit' }}
+                style={{ width: '100%', textAlign: 'left', color: 'inherit' }}
               >
                 <div className="grow">
                   <div className="truncate" style={{ textTransform: 'capitalize' }}>
                     {c.name.toLowerCase()}
                   </div>
                   <div className="tiny faint readout">
-                    {c._count?.items ?? 0} items · {c._count?.subcategories ?? 0}{' '}
-                    groups
+                    {t('cat.itemsGroups', {
+                      items: c._count?.items ?? 0,
+                      groups: c._count?.subcategories ?? 0,
+                    })}
                   </div>
                 </div>
                 <IconChevron />
@@ -96,14 +100,16 @@ export function CataloguePage() {
           <div className="row between" style={{ marginBottom: 12 }}>
             {cat && !search ? (
               <button className="btn ghost sm" onClick={() => setCat(null)}>
-                <IconBack /> Categories
+                <IconBack /> {t('cat.categoriesBack')}
               </button>
             ) : (
-              <span className="muted small">Results for “{search}”</span>
+              <span className="muted small">
+                {t('cat.resultsFor', { q: search })}
+              </span>
             )}
             {cat && !search && (
               <button className="btn primary sm" onClick={() => setCreating(true)}>
-                <IconPlus /> Item
+                <IconPlus /> {t('cat.addItem')}
               </button>
             )}
           </div>
@@ -122,8 +128,8 @@ export function CataloguePage() {
           ) : items.error ? (
             <ErrorBanner message={items.error} />
           ) : (items.data ?? []).length === 0 ? (
-            <EmptyState icon={<IconCatalogue />} title="No items found">
-              Try another search term.
+            <EmptyState icon={<IconCatalogue />} title={t('cat.noItems')}>
+              {t('cat.tryAnother')}
             </EmptyState>
           ) : (
             <div className="card" style={{ padding: '4px 14px' }}>
@@ -145,8 +151,11 @@ export function CataloguePage() {
                   <div className="grow">
                     <div className="small truncate">{it.description}</div>
                     <div className="tiny faint">
-                      base {formatMoney(it.basePrice)} · +{it.markupPct}% · per{' '}
-                      {it.unit}
+                      {t('cat.itemMeta', {
+                        base: formatMoney(it.basePrice),
+                        markup: it.markupPct,
+                        unit: it.unit,
+                      })}
                     </div>
                   </div>
                   <Money value={it.price} currency={it.currency} hi />
@@ -194,6 +203,7 @@ function ItemSheet({
   onClose: () => void;
   onSaved: () => void;
 }) {
+  const { t } = useI18n();
   const [description, setDescription] = useState(item?.description ?? '');
   const [unit, setUnit] = useState(item?.unit ?? 'St');
   const [basePrice, setBasePrice] = useState(String(item?.basePrice ?? ''));
@@ -238,10 +248,10 @@ function ItemSheet({
   };
 
   return (
-    <Sheet title={item ? 'Edit item' : 'New item'} onClose={onClose}>
+    <Sheet title={item ? t('cat.editItem') : t('cat.newItem')} onClose={onClose}>
       <div className="stack">
         {error && <ErrorBanner message={error} />}
-        <Field label="Description">
+        <Field label={t('cat.description')}>
           <textarea
             className="textarea"
             value={description}
@@ -249,14 +259,14 @@ function ItemSheet({
           />
         </Field>
         <div className="row" style={{ alignItems: 'flex-end' }}>
-          <Field label="Unit">
+          <Field label={t('common.unit')}>
             <input
               className="input"
               value={unit}
               onChange={(e) => setUnit(e.target.value)}
             />
           </Field>
-          <Field label="Base price (€)">
+          <Field label={t('cat.basePrice')}>
             <input
               className="input"
               type="number"
@@ -267,7 +277,7 @@ function ItemSheet({
             />
           </Field>
         </div>
-        <Field label="Markup %">
+        <Field label={t('cat.markup')}>
           <input
             className="input"
             type="number"
@@ -279,7 +289,7 @@ function ItemSheet({
         </Field>
 
         <div className="row between">
-          <span className="muted">Sell price</span>
+          <span className="muted">{t('cat.sellPrice')}</span>
           <Money value={sell} hi />
         </div>
 
@@ -288,11 +298,11 @@ function ItemSheet({
           onClick={save}
           disabled={busy || !description || !basePrice}
         >
-          {busy ? 'Saving…' : 'Save item'}
+          {busy ? t('common.saving') : t('cat.saveItem')}
         </button>
         {item && (
           <button className="btn danger block" onClick={del} disabled={busy}>
-            <IconTrash /> Delete item
+            <IconTrash /> {t('cat.deleteItem')}
           </button>
         )}
       </div>

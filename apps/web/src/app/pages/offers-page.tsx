@@ -11,10 +11,12 @@ import {
   PageHead,
   StatusBadge,
 } from '../components/ui';
+import { useI18n } from '../i18n/i18n';
 import { formatDate } from '../lib/format';
 import { useAsync } from '../lib/use-async';
 
 export function OffersPage() {
+  const { t } = useI18n();
   const navigate = useNavigate();
   const offers = useAsync(() => api.offers.list(), []);
   const [creating, setCreating] = useState(false);
@@ -22,11 +24,11 @@ export function OffersPage() {
   return (
     <div>
       <PageHead
-        eyebrow="Customer proposals"
-        title="Offers"
+        eyebrow={t('offers.eyebrow')}
+        title={t('offers.title')}
         action={
           <button className="btn primary sm" onClick={() => setCreating(true)}>
-            <IconPlus /> New
+            <IconPlus /> {t('common.new')}
           </button>
         }
       />
@@ -36,8 +38,8 @@ export function OffersPage() {
       ) : offers.error ? (
         <ErrorBanner message={offers.error} />
       ) : (offers.data ?? []).length === 0 ? (
-        <EmptyState icon={<IconOffers />} title="No offers yet">
-          Create one manually, or let the assistant draft it.
+        <EmptyState icon={<IconOffers />} title={t('offers.empty')}>
+          {t('offers.emptyHint')}
         </EmptyState>
       ) : (
         <div className="stack">
@@ -55,10 +57,11 @@ export function OffersPage() {
               <div className="row between" style={{ marginTop: 8 }}>
                 <div className="grow">
                   <div className="truncate">
-                    {o.title ?? o.customerName ?? 'Untitled offer'}
+                    {o.title ?? o.customerName ?? t('offers.untitled')}
                   </div>
                   <div className="tiny faint">
-                    {o.items.length} items · {formatDate(o.createdAt)}
+                    {t('common.items', { n: o.items.length })} ·{' '}
+                    {formatDate(o.createdAt)}
                   </div>
                 </div>
                 <Money value={o.total} currency={o.currency} hi />
@@ -70,8 +73,8 @@ export function OffersPage() {
 
       {creating && (
         <OfferFormSheet
-          heading="New offer"
-          submitLabel="Create offer"
+          heading={t('offers.new')}
+          submitLabel={t('offers.create')}
           onClose={() => setCreating(false)}
           onSubmit={async (values) => {
             const offer = await api.offers.create(values);

@@ -1,4 +1,5 @@
 import { NavLink } from 'react-router-dom';
+import { useI18n } from '../i18n/i18n';
 import {
   IconAI,
   IconCatalogue,
@@ -14,28 +15,33 @@ const tab =
 
 /** Fixed bottom tab bar. The center tab is the AI assistant (the hero). */
 export function BottomNav() {
+  const { t } = useI18n();
   return (
     <nav className="tabbar">
       <NavLink to="/catalogue" className={tab()}>
         <IconCatalogue />
-        <span>Catalogue</span>
+        <span>{t('nav.catalogue')}</span>
       </NavLink>
       <NavLink to="/offers" className={tab()}>
         <IconOffers />
-        <span>Offers</span>
+        <span>{t('nav.offers')}</span>
       </NavLink>
-      <NavLink to="/assistant" className={tab(true)} aria-label="Assistant">
+      <NavLink
+        to="/assistant"
+        className={tab(true)}
+        aria-label={t('nav.assistant')}
+      >
         <span className="fab">
           <IconAI />
         </span>
       </NavLink>
       <NavLink to="/invoices" className={tab()}>
         <IconInvoice />
-        <span>Invoices</span>
+        <span>{t('nav.invoices')}</span>
       </NavLink>
       <NavLink to="/account" className={tab()}>
         <IconUser />
-        <span>Account</span>
+        <span>{t('nav.account')}</span>
       </NavLink>
     </nav>
   );

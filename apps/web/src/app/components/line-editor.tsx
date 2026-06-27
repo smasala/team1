@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import type { ItemDto } from 'shared-types';
 import { api, type LineInput } from '../api/endpoints';
+import { useI18n } from '../i18n/i18n';
 import { useAsync } from '../lib/use-async';
 import { formatMoney } from '../lib/format';
 import { IconPlus, IconSearch, IconTrash } from './icons';
@@ -34,6 +35,7 @@ export function LineEditor({
   setLines: (lines: LineDraft[]) => void;
   currency?: string;
 }) {
+  const { t } = useI18n();
   const [picking, setPicking] = useState(false);
 
   const update = (i: number, patch: Partial<LineDraft>) =>
@@ -61,7 +63,7 @@ export function LineEditor({
     <div>
       {lines.length === 0 && (
         <p className="muted small" style={{ margin: '4px 0 12px' }}>
-          No line items yet. Add from the catalogue below.
+          {t('line.empty')}
         </p>
       )}
 
@@ -72,13 +74,14 @@ export function LineEditor({
               <div className="grow">
                 <div className="small truncate">{l.description}</div>
                 <div className="tiny faint">
-                  {formatMoney(l.unitPrice, currency)} / {l.unit ?? 'unit'}
+                  {formatMoney(l.unitPrice, currency)} /{' '}
+                  {l.unit ?? t('line.unitFallback')}
                 </div>
               </div>
               <button
                 className="btn ghost sm"
                 onClick={() => remove(i)}
-                aria-label="Remove line"
+                aria-label={t('line.removeLine')}
               >
                 <IconTrash />
               </button>
@@ -95,9 +98,9 @@ export function LineEditor({
                   onChange={(e) =>
                     update(i, { quantity: Number(e.target.value) || 0 })
                   }
-                  aria-label="Quantity"
+                  aria-label={t('line.quantity')}
                 />
-                <span className="muted small">× qty</span>
+                <span className="muted small">{t('line.qty')}</span>
               </div>
               <Money value={round2(l.quantity * l.unitPrice)} currency={currency} />
             </div>
@@ -110,11 +113,11 @@ export function LineEditor({
         style={{ marginTop: 12 }}
         onClick={() => setPicking(true)}
       >
-        <IconPlus /> Add catalogue item
+        <IconPlus /> {t('line.add')}
       </button>
 
       <div className="row between" style={{ marginTop: 14 }}>
-        <span className="muted">Subtotal</span>
+        <span className="muted">{t('line.subtotal')}</span>
         <Money value={subtotal} currency={currency} hi />
       </div>
 
@@ -131,6 +134,7 @@ function ItemPicker({
   onPick: (item: ItemDto) => void;
   onClose: () => void;
 }) {
+  const { t } = useI18n();
   const [search, setSearch] = useState('');
   const { data, loading } = useAsync<ItemDto[]>(
     () => (search.length >= 2 ? api.items.list({ search, take: 30 }) : Promise.resolve([])),
@@ -138,12 +142,12 @@ function ItemPicker({
   );
 
   return (
-    <Sheet title="Add item" onClose={onClose}>
+    <Sheet title={t('line.addItem')} onClose={onClose}>
       <div className="search" style={{ marginBottom: 14 }}>
         <IconSearch />
         <input
           autoFocus
-          placeholder="Search catalogue…"
+          placeholder={t('line.searchCatalogue')}
           value={search}
           onChange={(e) => setSearch(e.target.value)}
         />
@@ -170,14 +174,16 @@ function ItemPicker({
             >
               <div className="grow">
                 <div className="small truncate">{item.description}</div>
-                <div className="tiny faint">per {item.unit}</div>
+                <div className="tiny faint">
+                  {t('line.perUnit', { unit: item.unit })}
+                </div>
               </div>
               <Money value={item.price} currency={item.currency} hi />
             </button>
           ))}
           {search.length >= 2 && !loading && (data ?? []).length === 0 && (
             <p className="muted small" style={{ textAlign: 'center' }}>
-              No items match “{search}”.
+              {t('line.noMatch', { q: search })}
             </p>
           )}
         </div>

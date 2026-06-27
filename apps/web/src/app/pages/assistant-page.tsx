@@ -4,6 +4,7 @@ import type { AiDraftResponse } from 'shared-types';
 import { api } from '../api/endpoints';
 import { IconAI, IconMic, IconSend } from '../components/icons';
 import { Money, Spinner } from '../components/ui';
+import { useI18n } from '../i18n/i18n';
 import { formatMoney, formatPercent } from '../lib/format';
 import { useSpeech } from '../lib/use-speech';
 
@@ -13,13 +14,8 @@ interface Message {
   draft?: AiDraftResponse;
 }
 
-const SUGGESTIONS = [
-  'Offer for 100m² house demolition',
-  '50 m² plaster and 20 m² tiling',
-  '8 hours excavation and disposal',
-];
-
 export function AssistantPage() {
+  const { t } = useI18n();
   const navigate = useNavigate();
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState('');
@@ -27,6 +23,12 @@ export function AssistantPage() {
   const [savingIdx, setSavingIdx] = useState<number | null>(null);
   const endRef = useRef<HTMLDivElement>(null);
   const speech = useSpeech(setInput);
+
+  const suggestions = [
+    t('assistant.suggestion1'),
+    t('assistant.suggestion2'),
+    t('assistant.suggestion3'),
+  ];
 
   useEffect(() => {
     endRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -46,7 +48,7 @@ export function AssistantPage() {
         ...m,
         {
           role: 'assistant',
-          text: e instanceof Error ? e.message : 'Something went wrong.',
+          text: e instanceof Error ? e.message : t('assistant.error'),
         },
       ]);
     } finally {
@@ -80,15 +82,14 @@ export function AssistantPage() {
       {messages.length === 0 && (
         <div style={{ padding: '8px 2px 18px' }}>
           <div className="eyebrow" style={{ marginBottom: 10 }}>
-            Core feature
+            {t('assistant.coreFeature')}
           </div>
-          <h1 style={{ fontSize: 28 }}>Describe the job.</h1>
+          <h1 style={{ fontSize: 28 }}>{t('assistant.describeJob')}</h1>
           <p className="muted" style={{ marginTop: 6 }}>
-            Tell me the work and the quantities — I’ll match catalogue items and
-            draft a priced offer.
+            {t('assistant.describeHint')}
           </p>
           <div className="flex-wrap" style={{ marginTop: 16 }}>
-            {SUGGESTIONS.map((s) => (
+            {suggestions.map((s) => (
               <button
                 key={s}
                 className="btn ghost sm"
@@ -138,7 +139,7 @@ export function AssistantPage() {
         })}
         {pending && (
           <div className="card row" style={{ maxWidth: '60%', gap: 10 }}>
-            <Spinner /> <span className="muted small">Drafting…</span>
+            <Spinner /> <span className="muted small">{t('assistant.drafting')}</span>
           </div>
         )}
         <div ref={endRef} />
@@ -158,14 +159,26 @@ export function AssistantPage() {
           <button
             className={`btn ${speech.listening ? 'primary' : 'ghost'}`}
             onClick={speech.toggle}
-            aria-label={speech.supported ? 'Voice input' : 'Insert example'}
-            title={speech.supported ? 'Voice input' : 'Voice not supported — inserts an example'}
+            aria-label={
+              speech.supported
+                ? t('assistant.voiceInput')
+                : t('assistant.insertExample')
+            }
+            title={
+              speech.supported
+                ? t('assistant.voiceInput')
+                : t('assistant.voiceUnsupported')
+            }
           >
             <IconMic />
           </button>
           <input
             className="input grow"
-            placeholder={speech.listening ? 'Listening…' : 'Describe the work…'}
+            placeholder={
+              speech.listening
+                ? t('assistant.listening')
+                : t('assistant.placeholder')
+            }
             value={input}
             onChange={(e) => setInput(e.target.value)}
             onKeyDown={(e) => e.key === 'Enter' && send(input)}
@@ -174,7 +187,7 @@ export function AssistantPage() {
             className="btn primary"
             onClick={() => send(input)}
             disabled={pending || !input.trim()}
-            aria-label="Send"
+            aria-label={t('assistant.send')}
           >
             <IconSend />
           </button>
@@ -193,6 +206,7 @@ function DraftCard({
   saving: boolean;
   onSave: () => void;
 }) {
+  const { t } = useI18n();
   return (
     <div className="card stack" style={{ maxWidth: '92%' }}>
       <div className="row" style={{ gap: 8 }}>
@@ -211,7 +225,7 @@ function DraftCard({
                 {l.quantity}
                 {l.unit ? ` ${l.unit}` : ''} ×{' '}
                 {formatMoney(l.unitPrice, draft.currency)}
-                {l.matchScore === 0 ? ' · no match' : ''}
+                {l.matchScore === 0 ? ` · ${t('assistant.noMatch')}` : ''}
               </div>
             </div>
             <span className="money">
@@ -221,26 +235,28 @@ function DraftCard({
         ))}
         <div className="totals">
           <div className="line">
-            <span>Subtotal</span>
+            <span>{t('assistant.subtotal')}</span>
             <span className="money">
               {formatMoney(draft.subtotal, draft.currency)}
             </span>
           </div>
           <div className="line">
-            <span>VAT {formatPercent(draft.taxRate)}</span>
+            <span>
+              {t('assistant.vat')} {formatPercent(draft.taxRate)}
+            </span>
             <span className="money">
               {formatMoney(draft.taxAmount, draft.currency)}
             </span>
           </div>
           <div className="line grand">
-            <span>Total</span>
+            <span>{t('assistant.total')}</span>
             <Money value={draft.total} currency={draft.currency} hi />
           </div>
         </div>
       </div>
 
       <button className="btn primary block" onClick={onSave} disabled={saving}>
-        {saving ? 'Saving…' : 'Save as offer'}
+        {saving ? t('assistant.saving') : t('assistant.saveAsOffer')}
       </button>
     </div>
   );

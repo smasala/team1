@@ -1,10 +1,12 @@
 import { Outlet, useNavigate } from 'react-router-dom';
 import { useAuth } from '../auth/auth-context';
+import { useI18n } from '../i18n/i18n';
 import { BottomNav } from './bottom-nav';
 
 /** Mobile shell: sticky brand bar + scrollable content + bottom tab bar. */
 export function AppShell() {
   const { user } = useAuth();
+  const { t } = useI18n();
   const navigate = useNavigate();
   const initial = (user?.fullName ?? user?.email ?? '?').charAt(0).toUpperCase();
 
@@ -19,7 +21,7 @@ export function AppShell() {
         <button
           className="brand"
           onClick={() => navigate('/account')}
-          aria-label="Account"
+          aria-label={t('nav.account')}
           style={{
             border: 'none',
             background: 'var(--surface-2)',

@@ -11,9 +11,11 @@ import {
   PageHead,
   StatusBadge,
 } from '../components/ui';
+import { useI18n } from '../i18n/i18n';
 import { useAsync } from '../lib/use-async';
 
 export function OfferDetailPage() {
+  const { t } = useI18n();
   const { id = '' } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const offer = useAsync(() => api.offers.get(id), [id]);
@@ -46,7 +48,7 @@ export function OfferDetailPage() {
   };
 
   const remove = async () => {
-    if (!window.confirm('Delete this offer?')) return;
+    if (!window.confirm(t('offers.confirmDelete'))) return;
     setBusy(true);
     try {
       await api.offers.remove(id);
@@ -64,18 +66,18 @@ export function OfferDetailPage() {
         onClick={() => navigate('/offers')}
         style={{ marginBottom: 12 }}
       >
-        <IconBack /> Offers
+        <IconBack /> {t('nav.offers')}
       </button>
 
       {offer.loading ? (
         <Loading />
       ) : offer.error || !o ? (
-        <ErrorBanner message={offer.error ?? 'Offer not found'} />
+        <ErrorBanner message={offer.error ?? t('offers.notFound')} />
       ) : (
         <div className="stack">
           <PageHead
-            eyebrow={o.number ?? 'Offer'}
-            title={o.title ?? o.customerName ?? 'Offer'}
+            eyebrow={o.number ?? t('offers.fallback')}
+            title={o.title ?? o.customerName ?? t('offers.fallback')}
           />
 
           <div className="row between">
@@ -88,7 +90,7 @@ export function OfferDetailPage() {
             >
               {OFFER_STATUSES.map((s) => (
                 <option key={s} value={s}>
-                  {s}
+                  {t(`status.${s}`)}
                 </option>
               ))}
             </select>
@@ -103,25 +105,26 @@ export function OfferDetailPage() {
             onClick={() => setEditing(true)}
             disabled={busy}
           >
-            Edit offer
+            {t('offers.edit')}
           </button>
           <button
             className="btn primary block"
             onClick={generateInvoice}
             disabled={busy}
           >
-            <IconInvoice /> {busy ? 'Working…' : 'Generate invoice'}
+            <IconInvoice />{' '}
+            {busy ? t('common.working') : t('offers.generateInvoice')}
           </button>
           <button className="btn danger block" onClick={remove} disabled={busy}>
-            <IconTrash /> Delete offer
+            <IconTrash /> {t('offers.delete')}
           </button>
         </div>
       )}
 
       {editing && o && (
         <OfferFormSheet
-          heading="Edit offer"
-          submitLabel="Save changes"
+          heading={t('offers.edit')}
+          submitLabel={t('offers.save')}
           initial={{
             title: o.title,
             customerName: o.customerName,

@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import type { LineInput } from '../api/endpoints';
+import { useI18n } from '../i18n/i18n';
 import { LineDraft, LineEditor, toLineInput } from './line-editor';
 import { ErrorBanner, Field, Sheet } from './ui';
 
@@ -33,6 +34,7 @@ export function OfferFormSheet({
   onClose: () => void;
   onSubmit: (values: OfferSubmit) => Promise<void>;
 }) {
+  const { t } = useI18n();
   const [title, setTitle] = useState(initial?.title ?? '');
   const [customerName, setCustomerName] = useState(initial?.customerName ?? '');
   const [customerEmail, setCustomerEmail] = useState(
@@ -66,23 +68,23 @@ export function OfferFormSheet({
     <Sheet title={heading} onClose={onClose}>
       <div className="stack">
         {error && <ErrorBanner message={error} />}
-        <Field label="Title">
+        <Field label={t('form.title')}>
           <input
             className="input"
-            placeholder="e.g. Bathroom renovation"
+            placeholder={t('form.titlePlaceholder')}
             value={title}
             onChange={(e) => setTitle(e.target.value)}
           />
         </Field>
         <div className="row" style={{ alignItems: 'flex-end' }}>
-          <Field label="Customer">
+          <Field label={t('form.customer')}>
             <input
               className="input"
               value={customerName}
               onChange={(e) => setCustomerName(e.target.value)}
             />
           </Field>
-          <Field label="VAT %">
+          <Field label={t('form.vat')}>
             <input
               className="input"
               type="number"
@@ -94,7 +96,7 @@ export function OfferFormSheet({
             />
           </Field>
         </div>
-        <Field label="Customer email">
+        <Field label={t('form.customerEmail')}>
           <input
             className="input"
             type="email"
@@ -104,7 +106,7 @@ export function OfferFormSheet({
         </Field>
 
         <div className="divider" />
-        <div className="eyebrow">Line items</div>
+        <div className="eyebrow">{t('form.lineItems')}</div>
         <LineEditor lines={lines} setLines={setLines} />
 
         <button
@@ -112,7 +114,7 @@ export function OfferFormSheet({
           onClick={submit}
           disabled={busy || lines.length === 0}
         >
-          {busy ? 'Saving…' : submitLabel}
+          {busy ? t('common.saving') : submitLabel}
         </button>
       </div>
     </Sheet>

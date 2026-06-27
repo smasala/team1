@@ -1,10 +1,12 @@
 import { useState } from 'react';
 import { useAuth } from '../auth/auth-context';
 import { ErrorBanner, Field } from '../components/ui';
+import { useI18n } from '../i18n/i18n';
 
 /** Auth gate. Supabase email/password when configured, else the dev workspace. */
 export function LoginPage() {
   const { mode, signIn } = useAuth();
+  const { t } = useI18n();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [busy, setBusy] = useState(false);
@@ -45,18 +47,13 @@ export function LoginPage() {
 
         <div>
           <div className="eyebrow" style={{ marginBottom: 12 }}>
-            Field quoting tool
+            {t('login.eyebrow')}
           </div>
           <h1 style={{ fontSize: 38, lineHeight: 1.05 }}>
-            Quote the job
-            <br />
-            before you leave
-            <br />
-            the site.
+            {t('login.headline')}
           </h1>
           <p className="muted" style={{ marginTop: 14, fontSize: 15 }}>
-            Build offers and invoices from a priced trade catalogue — or just
-            describe the work and let the assistant draft it for you.
+            {t('login.subtitle')}
           </p>
         </div>
 
@@ -65,23 +62,23 @@ export function LoginPage() {
           style={{ listStyle: 'none', padding: 0, margin: 0, color: 'var(--muted)' }}
         >
           {[
-            '2,869 catalogue items, priced',
-            'Offers → invoices in one tap',
-            'Talk or type to draft a quote',
-          ].map((t) => (
+            t('login.feature1'),
+            t('login.feature2'),
+            t('login.feature3'),
+          ].map((feature) => (
             <li
-              key={t}
+              key={feature}
               style={{ display: 'flex', gap: 10, padding: '4px 0' }}
             >
               <span style={{ color: 'var(--hi)' }}>▸</span>
-              {t}
+              {feature}
             </li>
           ))}
         </ul>
 
         {mode === 'supabase' && (
           <div className="stack">
-            <Field label="Email">
+            <Field label={t('common.email')}>
               <input
                 className="input"
                 type="email"
@@ -90,7 +87,7 @@ export function LoginPage() {
                 onChange={(e) => setEmail(e.target.value)}
               />
             </Field>
-            <Field label="Password">
+            <Field label={t('login.passwordLabel')}>
               <input
                 className="input"
                 type="password"
@@ -107,15 +104,13 @@ export function LoginPage() {
 
         <button className="btn primary block" onClick={submit} disabled={busy}>
           {busy
-            ? 'Signing in…'
+            ? t('login.signingIn')
             : mode === 'supabase'
-              ? 'Sign in'
-              : 'Open test workspace'}
+              ? t('login.signIn')
+              : t('login.openWorkspace')}
         </button>
         <p className="tiny faint" style={{ textAlign: 'center', margin: 0 }}>
-          {mode === 'supabase'
-            ? 'Signed in with Supabase.'
-            : 'Signs in as the seeded Supabase test account.'}
+          {mode === 'supabase' ? t('login.supabaseNote') : t('login.devNote')}
         </p>
       </div>
     </div>

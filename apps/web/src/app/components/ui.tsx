@@ -1,4 +1,5 @@
 import { useEffect, type ReactNode } from 'react';
+import { useI18n } from '../i18n/i18n';
 import { formatMoney } from '../lib/format';
 
 /* ---- Numeric readout ---------------------------------------------------- */
@@ -22,12 +23,18 @@ export function Money({
 /* ---- Status badge ------------------------------------------------------- */
 
 export function StatusBadge({ status }: { status: string }) {
-  return <span className={`badge ${status.toLowerCase()}`}>{status}</span>;
+  const { t } = useI18n();
+  return (
+    <span className={`badge ${status.toLowerCase()}`}>{t(`status.${status}`)}</span>
+  );
 }
 
 /* ---- Loading / error / empty ------------------------------------------- */
 
-export const Spinner = () => <div className="spinner" aria-label="Loading" />;
+export const Spinner = () => {
+  const { t } = useI18n();
+  return <div className="spinner" aria-label={t('common.loading')} />;
+};
 
 export const Loading = () => (
   <div className="center-load">
