@@ -216,7 +216,7 @@ function ItemSheet({
         markupPct: Number(markupPct),
       };
       if (item) await api.items.update(item.id, payload);
-      else await api.items.create({ ...payload, categoryId: categoryId! });
+      else if (categoryId) await api.items.create({ ...payload, categoryId });
       onSaved();
     } catch (e) {
       setError(e instanceof Error ? e.message : String(e));

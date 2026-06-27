@@ -102,33 +102,40 @@ export function AssistantPage() {
       )}
 
       <div className="stack" style={{ paddingBottom: 8 }}>
-        {messages.map((m, i) =>
-          m.role === 'user' ? (
-            <div
-              key={i}
-              className="card"
-              style={{
-                marginLeft: 'auto',
-                maxWidth: '85%',
-                background: 'var(--surface-2)',
-                borderColor: 'var(--line-strong)',
-              }}
-            >
-              {m.text}
-            </div>
-          ) : m.draft ? (
-            <DraftCard
-              key={i}
-              draft={m.draft}
-              saving={savingIdx === i}
-              onSave={() => saveAsOffer(m.draft!, i)}
-            />
-          ) : (
+        {messages.map((m, i) => {
+          if (m.role === 'user') {
+            return (
+              <div
+                key={i}
+                className="card"
+                style={{
+                  marginLeft: 'auto',
+                  maxWidth: '85%',
+                  background: 'var(--surface-2)',
+                  borderColor: 'var(--line-strong)',
+                }}
+              >
+                {m.text}
+              </div>
+            );
+          }
+          const draft = m.draft;
+          if (draft) {
+            return (
+              <DraftCard
+                key={i}
+                draft={draft}
+                saving={savingIdx === i}
+                onSave={() => saveAsOffer(draft, i)}
+              />
+            );
+          }
+          return (
             <div key={i} className="banner-error" style={{ maxWidth: '85%' }}>
               {m.text}
             </div>
-          ),
-        )}
+          );
+        })}
         {pending && (
           <div className="card row" style={{ maxWidth: '60%', gap: 10 }}>
             <Spinner /> <span className="muted small">Drafting…</span>

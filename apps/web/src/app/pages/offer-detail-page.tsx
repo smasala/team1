@@ -13,9 +13,9 @@ import {
 import { useAsync } from '../lib/use-async';
 
 export function OfferDetailPage() {
-  const { id } = useParams<{ id: string }>();
+  const { id = '' } = useParams<{ id: string }>();
   const navigate = useNavigate();
-  const offer = useAsync(() => api.offers.get(id!), [id]);
+  const offer = useAsync(() => api.offers.get(id), [id]);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -24,7 +24,7 @@ export function OfferDetailPage() {
   const setStatus = async (status: OfferStatus) => {
     setError(null);
     try {
-      await api.offers.update(id!, { status });
+      await api.offers.update(id, { status });
       void offer.reload();
     } catch (e) {
       setError(e instanceof Error ? e.message : String(e));
@@ -35,7 +35,7 @@ export function OfferDetailPage() {
     setBusy(true);
     setError(null);
     try {
-      const inv = await api.invoices.fromOffer(id!);
+      const inv = await api.invoices.fromOffer(id);
       navigate(`/invoices/${inv.id}`);
     } catch (e) {
       setError(e instanceof Error ? e.message : String(e));
@@ -47,7 +47,7 @@ export function OfferDetailPage() {
     if (!window.confirm('Delete this offer?')) return;
     setBusy(true);
     try {
-      await api.offers.remove(id!);
+      await api.offers.remove(id);
       navigate('/offers');
     } catch (e) {
       setError(e instanceof Error ? e.message : String(e));

@@ -9,9 +9,9 @@ import { formatDate } from '../lib/format';
 import { useAsync } from '../lib/use-async';
 
 export function InvoiceDetailPage() {
-  const { id } = useParams<{ id: string }>();
+  const { id = '' } = useParams<{ id: string }>();
   const navigate = useNavigate();
-  const invoice = useAsync(() => api.invoices.get(id!), [id]);
+  const invoice = useAsync(() => api.invoices.get(id), [id]);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -20,7 +20,7 @@ export function InvoiceDetailPage() {
   const setStatus = async (status: InvoiceStatus) => {
     setError(null);
     try {
-      await api.invoices.update(id!, { status });
+      await api.invoices.update(id, { status });
       void invoice.reload();
     } catch (e) {
       setError(e instanceof Error ? e.message : String(e));
@@ -31,7 +31,7 @@ export function InvoiceDetailPage() {
     if (!window.confirm('Delete this invoice?')) return;
     setBusy(true);
     try {
-      await api.invoices.remove(id!);
+      await api.invoices.remove(id);
       navigate('/invoices');
     } catch (e) {
       setError(e instanceof Error ? e.message : String(e));
