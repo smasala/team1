@@ -138,8 +138,15 @@ request
       vector index is HNSW `vector_cosine_ops`.
 
 ### Phase 1 — Retrieval foundation
-- [ ] **#12** Embedding service (Gemini `text-embedding-004`, 768-dim); batch-embed all
+- [x] **#12** Embedding service (Gemini `text-embedding-004`, 768-dim); batch-embed all
       items at seed; re-embed on item create/update. *(needs #11)*
+      *Done:* `apps/api/src/app/ai/embedding.ts` (pure Gemini batch client + pgvector write
+      helpers, reused outside DI), `embedding.service.ts` (`EmbeddingService.embedItem` /
+      `backfillMissing`, best-effort), wired via `embedding.module.ts`. `ItemService` re-embeds
+      fire-and-forget on create and on description change. Reuses `GEMINI_API_KEY`
+      (`GEMINI_EMBEDDING_MODEL` optional). **Existing rows: run `npm run db:embed`** (idempotent,
+      embeds only `embedding IS NULL`). The seed stays pure data-access (no app import); embedding
+      is driven by the API on writes and by the backfill script. DI boot + build verified.
 - [ ] **#13** Hybrid retrieval service: pgvector ANN ⊕ FTS/trigram via RRF; category +
       unit boost; top-K (~15–20); org-scoped raw SQL. *(needs #11, #12)*
 - [ ] **#14** Replace the substring `bestMatch` in `ai.service` with the retrieval service
@@ -185,6 +192,9 @@ request
 | AI wire contract (now with coverage/assumptions/sections) | `libs/shared-types/src/lib/ai.ts` |
 | pgvector/FTS/trigram raw SQL (#11) | `libs/data-access/prisma/sql/*.sql` |
 | Raw-SQL runner (PrismaPg adapter, mirrors seed) | `scripts/db/run-sql.ts` |
+| Embedding client + pgvector write helpers (#12) | `apps/api/src/app/ai/embedding.ts` |
+| Embedding service (re-embed / backfill) | `apps/api/src/app/ai/embedding.service.ts` |
+| Embedding backfill script (`npm run db:embed`) | `scripts/db/backfill-embeddings.ts` |
 | Catalogue item CRUD | `apps/api/src/app/catalogue/item.service.ts` |
 | Auth: login + provision | `apps/api/src/app/auth/auth.service.ts` |
 | Supabase password verify | `apps/api/src/app/auth/supabase-auth.ts` |
@@ -200,6 +210,7 @@ npm install            # postinstall runs prisma generate
 npm run db:push        # sync schema (add --accept-data-loss for column drops)
 npm run db:pgvector    # #11: extensions -> db push -> FTS/trigram/HNSW indexes
 npm run db:seed        # reseed catalogue + test user
+npm run db:embed       # #12: backfill catalogue embeddings (idempotent; needs GEMINI_API_KEY)
 npm run dev            # api :3000/api + web :4200
 npx nx run-many -t typecheck lint test -p api web data-access shared-types
 npx nx run-many -t build -p api web
@@ -225,7 +236,8 @@ npx nx run-many -t build -p api web
 ---
 
 ## 8. Open decisions for the next session
-- Embedding model: Gemini `text-embedding-004` (768-dim) keeps it single-provider — confirm.
+- ~~Embedding model: Gemini `text-embedding-004` (768-dim) keeps it single-provider.~~
+  **Resolved (#12):** `text-embedding-004` @ 768-dim, `GEMINI_EMBEDDING_MODEL` overridable.
 - `JobTemplate` as a DB table vs prompt-embedded few-shot (start with the latter).
 - Decomposition temperature (lower than the current 0.9 for stability) — pick a value + test.
 - Whether to expose retrieval `matchScore`/candidates in the UI for trust/debugging.

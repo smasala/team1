@@ -4,6 +4,7 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { PrismaService } from 'data-access';
+import { EmbeddingService } from '../ai/embedding.service';
 import type { CreateItemDto, QueryItemDto, UpdateItemDto } from './dto/item.dto';
 
 /**
@@ -13,7 +14,10 @@ import type { CreateItemDto, QueryItemDto, UpdateItemDto } from './dto/item.dto'
  */
 @Injectable()
 export class ItemService {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly embedding: EmbeddingService,
+  ) {}
 
   list(organisationId: string, query: QueryItemDto) {
     const { categoryId, subcategoryId, search, take = 50, skip = 0 } = query;
@@ -43,7 +47,7 @@ export class ItemService {
 
   async create(organisationId: string, dto: CreateItemDto) {
     await this.assertCategory(organisationId, dto.categoryId);
-    return this.prisma.item.create({
+    const item = await this.prisma.item.create({
       data: {
         description: dto.description,
         unit: dto.unit,
@@ -53,6 +57,10 @@ export class ItemService {
         subcategoryId: dto.subcategoryId ?? null,
       },
     });
+    // Embed in the background so retrieval (#13) sees the new row; never blocks
+    // or fails the write (embedItem swallows its own errors).
+    void this.embedding.embedItem(item.id, item.description);
+    return item;
   }
 
   async update(organisationId: string, id: string, dto: UpdateItemDto) {
@@ -63,7 +71,7 @@ export class ItemService {
     if (!current) throw new NotFoundException(`Item ${id} not found`);
     if (dto.categoryId) await this.assertCategory(organisationId, dto.categoryId);
 
-    return this.prisma.item.update({
+    const item = await this.prisma.item.update({
       where: { id },
       data: {
         description: dto.description,
@@ -74,6 +82,11 @@ export class ItemService {
         subcategoryId: dto.subcategoryId,
       },
     });
+    // Re-embed only when the description (the embedded text) actually changed.
+    if (dto.description !== undefined) {
+      void this.embedding.embedItem(item.id, item.description);
+    }
+    return item;
   }
 
   async remove(organisationId: string, id: string) {

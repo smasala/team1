@@ -180,6 +180,9 @@ async function main(): Promise<void> {
   const organisationId = await seedUser();
   await seedCatalogue(catalogue, organisationId);
   console.log('Seed complete.');
+  console.log(
+    'Next: `npm run db:embed` to backfill catalogue embeddings for AI retrieval.',
+  );
 }
 
 main()
