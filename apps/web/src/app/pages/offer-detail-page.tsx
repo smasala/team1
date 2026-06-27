@@ -4,6 +4,7 @@ import { OFFER_STATUSES, type OfferStatus } from 'shared-types';
 import { api } from '../api/endpoints';
 import { DocumentView } from '../components/document-view';
 import { IconBack, IconInvoice, IconTrash } from '../components/icons';
+import { OfferFormSheet } from '../components/offer-form';
 import {
   ErrorBanner,
   Loading,
@@ -17,6 +18,7 @@ export function OfferDetailPage() {
   const navigate = useNavigate();
   const offer = useAsync(() => api.offers.get(id), [id]);
   const [busy, setBusy] = useState(false);
+  const [editing, setEditing] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   const o = offer.data;
@@ -97,6 +99,13 @@ export function OfferDetailPage() {
           <DocumentView doc={o} />
 
           <button
+            className="btn ghost block"
+            onClick={() => setEditing(true)}
+            disabled={busy}
+          >
+            Edit offer
+          </button>
+          <button
             className="btn primary block"
             onClick={generateInvoice}
             disabled={busy}
@@ -107,6 +116,32 @@ export function OfferDetailPage() {
             <IconTrash /> Delete offer
           </button>
         </div>
+      )}
+
+      {editing && o && (
+        <OfferFormSheet
+          heading="Edit offer"
+          submitLabel="Save changes"
+          initial={{
+            title: o.title,
+            customerName: o.customerName,
+            customerEmail: o.customerEmail,
+            taxRate: o.taxRate,
+            lines: o.items.map((li) => ({
+              itemId: li.itemId ?? undefined,
+              description: li.description,
+              unit: li.unit,
+              quantity: li.quantity,
+              unitPrice: li.unitPrice,
+            })),
+          }}
+          onClose={() => setEditing(false)}
+          onSubmit={async (values) => {
+            await api.offers.update(id, values);
+            setEditing(false);
+            void offer.reload();
+          }}
+        />
       )}
     </div>
   );
