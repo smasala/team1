@@ -41,6 +41,16 @@
 - [x] A6 Feature views: auth, catalogue CRUD, offer/invoice flows, AI chat
 - [x] A7 Switch dev DB to Supabase Postgres (`prisma db push`, no migrations)
 
+## Phase 7 — Multi-tenancy, auth, AI & i18n
+- [x] B1 Organisation model; org + role on User; organisationId on Offer/Invoice/Category (multi-tenancy)
+- [x] B2 JWT auth context: org_id/app_role claims, guard resolves user+org+role, `@CurrentUser`/`@CurrentOrg`/`@Roles`
+- [x] B3 Org-scope all business APIs (offers, invoices, catalogue, AI matching)
+- [x] B4 Supabase email/password login; dev-login retrieves the seeded test user (no hardcoded provisioning)
+- [x] B5 Gemini-backed (non-deterministic) offer drafting with deterministic local fallback
+- [x] B6 Team member CRUD + UI (employees/admins), admin-gated
+- [x] B7 i18n across the whole app (German default, English switch)
+- [x] B8 Rebuild graphify graph; commit + push
+
 ## Conventions (apply throughout)
 - Conventional Commits (`feat:`, `chore:`, `docs:`, `build:`...).
 - Modular: apps thin, logic in libs; one responsibility per module.
