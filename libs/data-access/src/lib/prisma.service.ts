@@ -3,16 +3,15 @@ import {
   type OnModuleDestroy,
   type OnModuleInit,
 } from '@nestjs/common';
-import { PrismaBetterSqlite3 } from '@prisma/adapter-better-sqlite3';
+import { PrismaPg } from '@prisma/adapter-pg';
 import { PrismaClient } from '../generated/prisma/client.js';
 
 /**
  * The single owner of the Prisma connection for the whole app.
  *
- * DB swap (SQLite -> Supabase/Postgres): replace the adapter below with
- *   `new PrismaPg({ connectionString: process.env.DATABASE_URL })`
- * from `@prisma/adapter-pg`, set the provider to "postgresql" in the schema,
- * and point DATABASE_URL at Supabase. No other file changes.
+ * Connects to Supabase Postgres via the pg driver adapter, reading the
+ * connection string from DATABASE_URL. The whole app talks to the DB only
+ * through this service (separation of concerns).
  */
 @Injectable()
 export class PrismaService
@@ -21,8 +20,8 @@ export class PrismaService
 {
   constructor() {
     super({
-      adapter: new PrismaBetterSqlite3({
-        url: process.env.DATABASE_URL ?? 'file:./dev.db',
+      adapter: new PrismaPg({
+        connectionString: process.env.DATABASE_URL,
       }),
     });
   }

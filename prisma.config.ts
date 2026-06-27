@@ -7,6 +7,7 @@ export default defineConfig({
   schema: 'libs/data-access/prisma/schema.prisma',
   migrations: {
     path: 'libs/data-access/prisma/migrations',
+    seed: 'node --import @swc-node/register/esm-register libs/data-access/prisma/seed.ts',
   },
   datasource: {
     url: env('DATABASE_URL'),
